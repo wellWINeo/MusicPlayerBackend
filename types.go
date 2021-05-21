@@ -1,11 +1,11 @@
 package main
 
 type User struct {
-	Id        int
-	Username  string
-	Passwd    string
-	IsPremium bool
-	Token     string
+	Id        int    `json:"id"`
+	Email     string `json:"email"`
+	Username  string `json:"username"`
+	Passwd    string `json:"passwd"`
+	IsPremium bool   `json:"isPremium"`
 }
 
 type Track struct {
