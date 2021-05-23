@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	mux "github.com/gorilla/mux"
 	_ "github.com/mattn/go-sqlite3"
 )
 
@@ -22,32 +23,39 @@ func main() {
 		log.Fatal(err)
 	}
 	// configuring routing
-	mux := http.NewServeMux()
+	router := mux.NewRouter()
+
+	// middleware
+	router.Use(JWTAuthentication)
 
 	// register handler
-	// mux.HandleFunc("/register", func (w http.ResponseWriter, r *http.Request){
-	// 	w.Header().Set("Content-type", "text/plain")
-	// 	w.Write([]byte("Register handler"))
-	// })
-	mux.HandleFunc("/register", RegisterHandler)
+	router.HandleFunc("/register", RegisterHandler).Methods("POST")
 
 	// auth handler
-	mux.HandleFunc("/auth", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-type", "text/plain")
-		w.Write([]byte("Auth handler"))
-	})
+	router.HandleFunc("/auth", AuthHandler).Methods("POST")
 
-	// user handler
-	mux.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
+	// user handler - GET
+	router.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-type", "text/plain")
 		if r.Method != http.MethodGet {
 			w.Write([]byte("Go fuck yourself"))
 		} else {
 			w.Write([]byte("Auth handler"))
 		}
-	})
+	}).Methods("GET")
+
+	// user handler - POST
+	router.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request){
+		w.Header().Set("Content-type", "text/plain")
+		if r.Method != http.MethodGet {
+			w.Write([]byte("Go fuck yourself"))
+		} else {
+			w.Write([]byte("Auth handler"))
+		}
+	}).Methods("POST")
 
 	// server started
 	log.Println("Server started...")
-	log.Fatal(http.ListenAndServe(":8000", mux))
+	log.Fatal(http.ListenAndServe(":8000", router))
+
 }

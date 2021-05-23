@@ -4,7 +4,8 @@
 create table users
 (
     id integer primary key autoincrement,
-    login text,
+    login text unique,
+    email text unique,
     passwd text,
     is_premium boolean
 );
