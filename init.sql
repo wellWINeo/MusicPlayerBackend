@@ -32,3 +32,11 @@ create table liked
     track_id integer not null,
     foreign key (track_id) references tracks (id)
 );
+
+create table tokens
+(
+    id integer primary key autoincrement,
+    token text not null,
+    user_id int not null,
+    foreign key (user_id) references users (id)
+);

@@ -10,8 +10,8 @@ import (
 
 // funtction to create new user and write it to database
 func WriteUser(db *sql.DB, user User) (uint, error) {
-	result, err := db.Exec("insert into users(login, passwd, is_premium) values($1, $2, $3)",
-		user.Username, user.Passwd, user.IsPremium)
+	result, err := db.Exec("insert into users(login, email, passwd, is_premium) values($1, $2, $3, $4)",
+		user.Username, user.Email, user.Passwd, user.IsPremium)
 	if err != nil {
 		log.Println(err)
 		return *new(uint), err
@@ -30,7 +30,7 @@ func GetUserById(db *sql.DB, id string) (user User, err error) {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&user.Id, &user.Username, &user.Passwd, &user.IsPremium)
+		err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.Passwd, &user.IsPremium)
 		if err != nil {
 			return user, err
 		}
@@ -55,7 +55,7 @@ func GetUserByLogin(login string) (user User, ok bool) {
 	}
 
 	for rows.Next() {
-		err := rows.Scan(&user.Id, &user.Username, &user.Passwd, &user.IsPremium)
+		err := rows.Scan(&user.Id, &user.Username, &user.Email, &user.Passwd, &user.IsPremium)
 		if err != nil {
 			log.Println(err)
 			return user, false
@@ -96,4 +96,32 @@ func UpdateUser(db *sql.DB, token string, user User) error {
 	}
 
 	return nil
+}
+
+func WriteToken(userId int, token string) (bool) {
+	_, err := DB.Exec("insert into tokens(user_id, token) values($1, $2)", userId, token)
+	if err != nil {
+		return false
+	}
+	return true
+}
+
+func GetTokens(userId int) []string {
+	var tokens []string
+	rows, err := DB.Query("select * from tokens where user_id=$1", userId)
+	if err != nil {
+		return tokens
+	}
+
+	for rows.Next() {
+		var tmp string
+		err := rows.Scan(nil, &tmp, nil)
+		if err != nil {
+			log.Println(err)
+			return tokens
+		}
+		tokens = append(tokens, tmp)
+	}
+
+	return tokens
 }

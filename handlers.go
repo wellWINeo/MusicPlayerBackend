@@ -73,7 +73,7 @@ var JWTAuthentication = func(next http.Handler) http.Handler {
 		// parsing token
 		token, err := jwt.ParseWithClaims(tokenPart, tk,
 			func(token *jwt.Token) (interface{}, error) {
-				return []byte("some_example_passwd_string"), nil
+				return []byte(SignString), nil
 			})
 
 		// token is not properly formed
@@ -136,6 +136,14 @@ func AuthHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(userDB)
+	//json.NewEncoder(w).Encode(userDB)
+
+	tk := &Token{UserId: uint(userDB.Id)}
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tk)
+	tokenString, _ := token.SignedString([]byte(""))
+	json.NewEncoder(w).Encode(JSONMessage(true, tokenString))
+
+	WriteToken(userDB.Id, tokenString)
+
 	return
 }

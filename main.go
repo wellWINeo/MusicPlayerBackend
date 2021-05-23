@@ -11,12 +11,14 @@ import (
 )
 
 var (
-	DB *sql.DB
+	DB         *sql.DB
 	connString string
+	SignString string
 )
 
 func main() {
 	var err error
+	SignString = "SomeExampleSignString"
 	connString = "music.db"
 	DB, err = sql.Open("sqlite3", connString)
 	if err != nil {
@@ -45,7 +47,7 @@ func main() {
 	}).Methods("GET")
 
 	// user handler - POST
-	router.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request){
+	router.HandleFunc("/user", func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-type", "text/plain")
 		if r.Method != http.MethodGet {
 			w.Write([]byte("Go fuck yourself"))
