@@ -1,3 +1,4 @@
+
 -- init script to create SQL database
 
 -- some configuration staff
@@ -10,10 +11,10 @@ go
 set ansi_nulls on
 go
 
--- create database
-create database MusicPlayer
-go
 
+-- create database
+drop database if exists MusicPlayer;
+create database MusicPlayer;
 use MusicPlayer
 go
 
@@ -24,6 +25,7 @@ create table Artists
     name varchar(100),
     constraint pk_artists_id primary key clustered (id_artist)
 );
+--go
 
 create table Genre
 (
@@ -31,6 +33,7 @@ create table Genre
     title varchar(100),
     constraint fk_genre_id primary key clustered (id_genre)
 );
+go
 
 -- creating user table
 create table Users
@@ -43,6 +46,7 @@ create table Users
     constraint pk_user_id primary key clustered (id_user)
 
 );
+--go
 
 -- creating tracks table
 create table Tracks
@@ -60,6 +64,7 @@ create table Tracks
     constraint fk_tracks_artist foreign key (artist_id) references Artists (id_artist),
     constraint fk_tracks_genre foreign key (genre_id) references Genre (id_genre)
 );
+--go
 
 create table Likes
 (
@@ -72,6 +77,7 @@ create table Likes
     constraint fk_likes_track foreign key (track_id) references Tracks (id_track),
     constraint fk_likes_user foreign key ([user_id]) references Users (id_user)
 );
+--go
 
 create table History
 (
@@ -84,6 +90,7 @@ create table History
     constraint fk_history_track foreign key (track_id) references Tracks (id_track),
     constraint fk_history_user foreign key ([user_id]) references Users (id_user)
 );
+--go
 
 create table Referals
 (
@@ -95,6 +102,7 @@ create table Referals
     constraint fk_referaks_old_user foreign key (old_user_id) references Users (id_user),
     constraint fk_referals_new_user foreign key (new_user_Id) references Users (id_user)
 );
+--go
 
 create table Playlist
 (
@@ -105,6 +113,7 @@ create table Playlist
     constraint pk_playlist_id primary key clustered (id_playlist),
     constraint fk_playlist_user foreign key ([user_id]) references Users (id_user)
 );
+--go
 
 create table Owns
 (
@@ -116,6 +125,7 @@ create table Owns
     constraint fk_owns_track foreign key (track_id) references Tracks (id_track),
     constraint fk_owns_user foreign key ([user_id]) references Users (id_user)
 );
+--go
 
 create table PlaylistContent
 (
@@ -127,3 +137,4 @@ create table PlaylistContent
     constraint fk_playlist_content_track foreign key (track_id) references Tracks (id_track),
     constraint fk_content_playlist foreign key (playlist_id) references Playlist (id_playlist)
 );
+--go
