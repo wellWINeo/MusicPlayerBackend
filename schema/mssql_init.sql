@@ -18,94 +18,112 @@ use MusicPlayer
 go
 
 
--- creating tables
-create table Users
+create table Artists
 (
-    id int not null identity(1,1),
-    constraint pk_user_id primary key clustered (id)
-    username varchar(30) not null,
-    email varchar(100) ,
-    passwd varchar(100) not null,
-    is_premium boolean not null
+    id_artist int not null identity(1,1),
+    name varchar(100),
+    constraint pk_artists_id primary key clustered (id_artist)
 );
 
+create table Genre
+(
+    id_genre int not null identity(1,1),
+    title varchar(100),
+    constraint fk_genre_id primary key clustered (id_genre)
+);
+
+-- creating user table
+create table Users
+(
+    id_user int not null identity(1,1),
+    username varchar(30) not null,
+    email varchar(100),
+    passwd varchar(100) not null,
+    is_premium bit not null,
+    constraint pk_user_id primary key clustered (id_user)
+
+);
+
+-- creating tracks table
 create table Tracks
 (
-    id int not null identity(1,1),
-    constraint pk_track_id primary key clustered (id)
+    id_track int not null identity(1,1),
     title varchar(50) not null,
-    audio blob,
+    audio varbinary(max),
     hash varchar(256) not null,
-    artist int,
-    constraint fk_tracks_artist foreign key (artist) references Artist (id),
-    year int,
-    has_video boolean
+    artist_id int,
+    [year] int,
+    genre_id int,
+    has_video bit,
+    ---
+    constraint pk_track_id primary key clustered (id_track),
+    constraint fk_tracks_artist foreign key (artist_id) references Artists (id_artist),
+    constraint fk_tracks_genre foreign key (genre_id) references Genre (id_genre)
 );
 
 create table Likes
 (
-    id int not null identity(1,1),
-    constraint pk_likes_id primary key clustered (id),
-    track int,
-    constraint fk_likes_track foreign key (track) references Tracks (id),
-    [user] int,
-    constraint fk_likes_user foreign key ([user]) references Users (id),
-    [time] date
+    id_likes int not null identity(1,1),
+    track_id int,
+    [user_id] int,
+    [time] date,
+    ---
+    constraint pk_likes_id primary key clustered (id_likes),
+    constraint fk_likes_track foreign key (track_id) references Tracks (id_track),
+    constraint fk_likes_user foreign key ([user_id]) references Users (id_user)
 );
 
 create table History
 (
-    id int not null identity(1,1),
-    constraint pk_history_id primary key clustered (id),
-    track int,
-    constraint fk_history_track foreign key (track) references Tracks (id),
-    [user] int,
-    constraint fk_history_user foreign key ([user]) references Users (id),
-    [time] date
+    id_history int not null identity(1,1),
+    track_id int,
+    [user_id] int,
+    [time] date,
+    ---
+    constraint pk_history_id primary key clustered (id_history),
+    constraint fk_history_track foreign key (track_id) references Tracks (id_track),
+    constraint fk_history_user foreign key ([user_id]) references Users (id_user)
 );
 
 create table Referals
 (
-    id int not null identity(1,1),
-    constraint pk_referals_id primary key clustered (id),
-    old_user int,
-    constraint fk_referaks_old_user foreign key ([user]) references Users (id),
-    new_user int,
-    constraint fk_referals_new_user foreign key ([user]) references Users (id)
-);
-
-create table Artists
-(
-    id int not null identity(1,1),
-    constraint pk_artists_id primary key clustered (id),
-    name varchar(100)
+    id_referal int not null identity(1,1),
+    old_user_id int,
+    new_user_id int,
+    ---
+    constraint pk_referals_id primary key clustered (id_referal),
+    constraint fk_referaks_old_user foreign key (old_user_id) references Users (id_user),
+    constraint fk_referals_new_user foreign key (new_user_Id) references Users (id_user)
 );
 
 create table Playlist
 (
-    id int not null identity(1,1),
-    constraint pk_artists_id primary key clustered (id),
-    [user] int,
-    constraint fk_playlist_user foreign key ([user]) references Users (id),
-    title varchar(100)
+    id_playlist int not null identity(1,1),
+    [user_id] int,
+    title varchar(100),
+    ---
+    constraint pk_playlist_id primary key clustered (id_playlist),
+    constraint fk_playlist_user foreign key ([user_id]) references Users (id_user)
 );
 
 create table Owns
 (
-    id int not null identity(1,1),
-    constraint fk_owns_id primary key (id)
-    track int,
-    constraint fk_owns_track foreign key (track) references Tracks (id),
-    [user] int,
-    constraint fk_owns_user foreign key ([user]) references Users (id),
+    id_own int not null identity(1,1),
+    track_id int,
+    [user_id] int,
+    ---
+    constraint fk_owns_id primary key (id_own),
+    constraint fk_owns_track foreign key (track_id) references Tracks (id_track),
+    constraint fk_owns_user foreign key ([user_id]) references Users (id_user)
 );
 
 create table PlaylistContent
 (
-    id int not null identity(1,1),
-    constraint pk_playlistcontent_id primary key (id),
-    track integer references Tracks (id),
-    constraint fk_playlist_content_track foreign key (track) references Tracks (id),
-    playlist integer references Playlist (id),
-    constraint fk_content_playlist references key (playlist) references Playlist (id),
+    id_content int not null identity(1,1),
+    track_id integer,
+    playlist_id integer,
+    ---
+    constraint pk_playlistcontent_id primary key (id_content),
+    constraint fk_playlist_content_track foreign key (track_id) references Tracks (id_track),
+    constraint fk_content_playlist foreign key (playlist_id) references Playlist (id_playlist)
 );
