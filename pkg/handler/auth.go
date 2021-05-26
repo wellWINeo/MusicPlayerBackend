@@ -6,6 +6,6 @@ func (h *Handler) signUp(ctx *gin.Context) {
 
 }
 
-func (h *Handler) singIn(ctx *gin.Context) {
+func (h *Handler) signIn(ctx *gin.Context) {
 
 }

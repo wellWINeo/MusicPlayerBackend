@@ -1,42 +1,69 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"github.com/wellWINeo/MusicPlayerBackend/pkg/service"
+)
 
-type Handler struct{}
+type Handler struct {
+	services *service.Service
+}
+
+func NewHandler(services *service.Service) *Handler {
+	return &Handler{services: services}
+}
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
 	auth := router.Group("/auth")
 	{
-		auth.POST("/sign-in")
-		auth.POST("/sign-up")
+		auth.POST("/sign-in", h.signIn)
+		auth.POST("/sign-up", h.signUp)
 	}
 
 	api := router.Group("/api")
 	{
 		users := api.Group("/users")
 		{
-			users.GET("/")
-			users.PUT("/")
-			users.POST("/")
-			users.DELETE("/")
+			users.GET("/", h.getUser)
+			users.PUT("/", h.updateUser)
+			users.POST("/", h.createUser)
+			users.DELETE("/", h.deleteUser)
 		}
 
-		api.GET("/tracks_list")
 		tracks := api.Group("/tracks")
 		{
-			tracks.GET("/")
-			tracks.PUT("/")
-			tracks.POST("/")
-			tracks.DELETE("/")
+			tracks.GET("/all", h.getAllTracks)
+			tracks.GET("/:id/download", h.downloadTrack)
+			tracks.GET("/:id", h.getTrack)
+			tracks.PUT("/:id", h.updateTrack)
+			tracks.POST("/", h.createTrack)
+			tracks.DELETE("/:id", h.deleteTrack)
 		}
 
-		api.POST("/like")
-		api.DELETE("/like")
+		playlists := api.Group("/playlists")
+		{
+			playlists.GET("/all", h.getAllPlaylists)
 
-		api.GET("/history")
-		api.POST("/history")
+			playlists.GET("/:id", h.getPlaylist)
+			playlists.PUT("/:id", h.updatePlaylist)
+			playlists.POST("/", h.createPlaylist)
+			playlists.DELETE("/:id", h.deletePlaylist)
+
+		}
+
+		likes := api.Group("/like")
+		{
+			likes.POST("/:id", h.setLike)
+			likes.DELETE("/:id", h.unsetLike)
+		}
+
+		history := api.Group("/history")
+		{
+			history.POST("/:id", h.addToHistory)
+			history.GET("/", h.getHistory)
+		}
 	}
 
 	return router
