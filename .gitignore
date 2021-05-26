@@ -1,2 +1,3 @@
 MusicPlayerBackend
 *.db
+.env

@@ -1,9 +1,11 @@
 package main
 
 import (
-	"log"
+	"os"
 
 	_ "github.com/denisenkom/go-mssqldb"
+	"github.com/joho/godotenv"
+	"github.com/sirupsen/logrus"
 	"github.com/spf13/viper"
 	"github.com/wellWINeo/MusicPlayerBackend"
 	"github.com/wellWINeo/MusicPlayerBackend/pkg/handler"
@@ -12,20 +14,26 @@ import (
 )
 
 func main() {
+	logrus.SetFormatter(new(logrus.JSONFormatter))
+
 	if err := initConfig(); err != nil {
-		log.Fatalf("Can't initialize config: %s", err.Error())
+		logrus.Fatalf("Can't initialize config: %s", err.Error())
+	}
+
+	if err := godotenv.Load(); err  != nil {
+		logrus.Fatalf("Can't read .env file: %s", err.Error())
 	}
 
 	db, err := repository.NewMSSQLDB(repository.Config{
-		Host: "localhost",
-		Port: "1433",
-		Username: "SA",
-		Password: "A3F8CTvM4",
-		DBName: "MusicPlayer",
+		Host: viper.GetString("db.host"),
+		Port: viper.GetInt("db.port"),
+		Username: viper.GetString("db.username"),
+		Password: os.Getenv("DB_PASSWORD"),
+		DBName: viper.GetString("db.dbname"),
 	})
 
 	if err != nil {
-		log.Fatalf("Can't connect to DB: %s", err.Error())
+		logrus.Fatalf("Can't connect to DB: %s", err.Error())
 	}
 
 	repos := repository.NewRepository(db)
@@ -33,7 +41,7 @@ func main() {
 	handler := handler.NewHandler(services)
 	srv := new(MusicPlayerBackend.Server)
 	if err := srv.Run(viper.GetString("port"), handler.InitRoutes()); err != nil {
-		log.Fatal(err)
+		logrus.Fatal(err)
 	}
 }
 

@@ -1,1 +1,8 @@
+[server]
 port = "8000"
+
+[db]
+host = "localhost"
+port = 1433
+username = "SA"
+dbname = "MusicPlayer"

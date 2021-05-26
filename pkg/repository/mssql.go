@@ -9,7 +9,7 @@ import (
 
 type Config struct {
 	Host     string
-	Port     string
+	Port     int
 	Username string
 	Password string
 	DBName   string
@@ -19,7 +19,7 @@ func NewMSSQLDB(cfg Config) (*sqlx.DB, error) {
 	u := &url.URL{
 		Scheme: "sqlserver",
 		User:   url.UserPassword(cfg.Username, cfg.Password),
-		Host:   fmt.Sprintf("%s:%s", cfg.Host, cfg.Port),
+		Host:   fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
 	}
 	db, err := sqlx.Open("sqlserver", u.String())
 	if err != nil {
