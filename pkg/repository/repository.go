@@ -1,8 +1,13 @@
 package repository
 
-import "github.com/jmoiron/sqlx"
+import (
+	"github.com/jmoiron/sqlx"
+	"github.com/wellWINeo/MusicPlayerBackend"
+)
 
 type Authorization interface {
+	CreateUser(user MusicPlayerBackend.User) (int, error)
+	GetUser(username, password string) (MusicPlayerBackend.User, error)
 }
 
 type Playlist interface {
@@ -18,5 +23,7 @@ type Repository struct {
 }
 
 func NewRepository(db *sqlx.DB) *Repository {
-	return &Repository{}
+	return &Repository{
+		Authorization: NewAuthMSSQL(db),
+	}
 }

@@ -40,7 +40,8 @@ func main() {
 	services := service.NewService(repos)
 	handler := handler.NewHandler(services)
 	srv := new(MusicPlayerBackend.Server)
-	if err := srv.Run(viper.GetString("port"), handler.InitRoutes()); err != nil {
+	logrus.Printf("Running on port: %d", viper.GetInt("server.port"))
+	if err := srv.Run(viper.GetInt("server.port"), handler.InitRoutes()); err != nil {
 		logrus.Fatal(err)
 	}
 }

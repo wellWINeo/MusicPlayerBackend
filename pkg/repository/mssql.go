@@ -7,6 +7,19 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+var (
+	usersTable = "Users"
+	tracksTable = "Tracks"
+	genreTable = "Genre"
+	likesTable = "Likes"
+	historyTable = "History"
+	referalsTable = "Referals"
+	ownsTable = "Owns"
+	playlistTable = "Playlist"
+	contentTable = "PlaylistContent"
+	artistsTable = "Artists"
+)
+
 type Config struct {
 	Host     string
 	Port     int

@@ -1,8 +1,9 @@
 package MusicPlayerBackend
 
 type User struct {
-	Id       int    `json:"-"`
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Id        int    `json:"-" db:"user_id"`
+	Username  string `json:"username" binding:"required" db:"username"`
+	Email     string `json:"email" binding:"required" db:"email"`
+	Password  string `json:"password" binding:"required" db:"passwd"`
+	IsPremium bool   `json:"is_premium" db:"is_premium"`
 }
