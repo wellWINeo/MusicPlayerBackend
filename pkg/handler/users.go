@@ -7,10 +7,21 @@ import (
 )
 
 func (h *Handler) getUser(c *gin.Context) {
-	id, _ := c.Get(userIdCtx)
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"id": id,
-	})
+	id, ok := c.Get(userIdCtx)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "user id not found")
+		return
+	}
+
+	user, err := h.services.Authorization.GetUser(id.(int))
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// hide password
+	user.Password = ""
+	c.JSON(http.StatusOK, user)
 }
 
 func (h *Handler) updateUser(c *gin.Context) {

@@ -20,20 +20,11 @@ func (a *AuthMSSQL) CreateUser(user MusicPlayerBackend.User) (int, error) {
 	var id int
 	query := fmt.Sprintf("insert into %s(username, email, passwd) output INSERTED.id_user values(:username, :email, :passwd);",
 		usersTable)
-	//row, err := a.db.NamedQuery(query, user)
 	result, err := a.db.NamedQuery(query, user)
 	result.Scan(&id)
-	//logrus.Println(query)
-	//row := a.db.QueryRow(query, user.Username, user.Email, user.Password)
 	if err != nil {
 		return 0, err
 	}
-	// if row.Next() {
-	// 	err = row.Scan(&id)
-	// 	if err != nil {
-	// 		return 0, err
-	// 	}
-	// }
 	return id, nil
 }
 
@@ -41,5 +32,12 @@ func (a *AuthMSSQL) GetUser(username, password string) (MusicPlayerBackend.User,
 	var user MusicPlayerBackend.User
 	query := fmt.Sprintf("select * from %s where username=@p1 and passwd=@p2;", usersTable)
 	err := a.db.Get(&user, query, username, password)
+	return user, err
+}
+
+func (a *AuthMSSQL) GetUserById(id int) (MusicPlayerBackend.User, error) {
+	var user MusicPlayerBackend.User
+	query := fmt.Sprintf("select * from %s where id_user=@p1", usersTable)
+	err := a.db.Get(&user, query, id)
 	return user, err
 }

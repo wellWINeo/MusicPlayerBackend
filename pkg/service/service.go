@@ -9,6 +9,9 @@ type Authorization interface {
 	CreateUser(user MusicPlayerBackend.User) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
+	//Update(user MusicPlayerBackend.User) error
+	//Delete(id int) error
+	GetUser(id int) (MusicPlayerBackend.User, error)
 }
 
 type Playlist interface {

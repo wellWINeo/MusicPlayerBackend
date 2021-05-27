@@ -78,3 +78,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	}
 	return claims.UserId, nil
 }
+
+func (s *AuthService) GetUser(id int) (MusicPlayerBackend.User, error) {
+	return s.repo.GetUserById(id)
+}
