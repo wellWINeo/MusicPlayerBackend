@@ -42,7 +42,7 @@ create table Users
     username varchar(30) not null,
     email varchar(100),
     passwd varchar(100) not null,
-    is_premium bit not null,
+    is_premium bit default 0,
     constraint pk_user_id primary key clustered (id_user)
 
 );
@@ -75,7 +75,7 @@ create table Likes
     ---
     constraint pk_likes_id primary key clustered (id_likes),
     constraint fk_likes_track foreign key (track_id) references Tracks (id_track),
-    constraint fk_likes_user foreign key ([user_id]) references Users (id_user)
+    constraint fk_likes_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
 --go
 
@@ -88,7 +88,7 @@ create table History
     ---
     constraint pk_history_id primary key clustered (id_history),
     constraint fk_history_track foreign key (track_id) references Tracks (id_track),
-    constraint fk_history_user foreign key ([user_id]) references Users (id_user)
+    constraint fk_history_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
 --go
 
@@ -99,7 +99,7 @@ create table Referals
     new_user_id int,
     ---
     constraint pk_referals_id primary key clustered (id_referal),
-    constraint fk_referaks_old_user foreign key (old_user_id) references Users (id_user),
+    constraint fk_referals_old_user foreign key (old_user_id) references Users (id_user),
     constraint fk_referals_new_user foreign key (new_user_Id) references Users (id_user)
 );
 --go
@@ -111,7 +111,7 @@ create table Playlist
     title varchar(100),
     ---
     constraint pk_playlist_id primary key clustered (id_playlist),
-    constraint fk_playlist_user foreign key ([user_id]) references Users (id_user)
+    constraint fk_playlist_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
 --go
 
@@ -123,7 +123,7 @@ create table Owns
     ---
     constraint fk_owns_id primary key (id_own),
     constraint fk_owns_track foreign key (track_id) references Tracks (id_track),
-    constraint fk_owns_user foreign key ([user_id]) references Users (id_user)
+    constraint fk_owns_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
 --go
 
@@ -138,3 +138,11 @@ create table PlaylistContent
     constraint fk_content_playlist foreign key (playlist_id) references Playlist (id_playlist)
 );
 --go
+
+-- triggers
+create trigger.Users_DELETE
+on Users
+after delete
+as
+delete from Referals
+where new_user_id=(select id_user from inserted) or old_user_id=(select id_user from inserted)

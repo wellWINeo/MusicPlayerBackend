@@ -41,3 +41,21 @@ func (a *AuthMSSQL) GetUserById(id int) (MusicPlayerBackend.User, error) {
 	err := a.db.Get(&user, query, id)
 	return user, err
 }
+
+func (a *AuthMSSQL) DeleteUser(id int) error {
+	// deleting referals records
+	query := fmt.Sprintf("update %s set old_user_id=NULL where old_user_id=@p1",
+		referalsTable)
+	_, err := a.db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	query = fmt.Sprintf("update %s set new_user_id=NULL where new_user_id=@p1",
+		referalsTable)
+	_, err = a.db.Exec(query, id)
+
+	// deleting user
+	query = fmt.Sprintf("delete from %s where id_user=@p1", usersTable)
+	_, err = a.db.Exec(query, id)
+	return err
+}

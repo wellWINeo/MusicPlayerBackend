@@ -33,5 +33,9 @@ func (h *Handler) createUser(c *gin.Context) {
 }
 
 func (h *Handler) deleteUser(c *gin.Context) {
-
+	id, ok := c.Get(userIdCtx)
+	if !ok {
+		newErrorResponse(c, http.StatusInternalServerError, "user id not found")
+	}
+	h.services.DeleteUser(id.(int))
 }

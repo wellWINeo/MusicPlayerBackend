@@ -82,3 +82,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 func (s *AuthService) GetUser(id int) (MusicPlayerBackend.User, error) {
 	return s.repo.GetUserById(id)
 }
+
+func (s *AuthService) DeleteUser(id int) error {
+	return s.repo.DeleteUser(id)
+}

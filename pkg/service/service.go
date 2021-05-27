@@ -10,7 +10,7 @@ type Authorization interface {
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
 	//Update(user MusicPlayerBackend.User) error
-	//Delete(id int) error
+	DeleteUser(id int) error
 	GetUser(id int) (MusicPlayerBackend.User, error)
 }
 
