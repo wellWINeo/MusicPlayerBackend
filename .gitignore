@@ -1,3 +1,4 @@
 MusicPlayerBackend
 *.db
 .env
+.token
