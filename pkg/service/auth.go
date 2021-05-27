@@ -6,6 +6,7 @@ import (
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
+	_ "github.com/sirupsen/logrus"
 	"github.com/wellWINeo/MusicPlayerBackend"
 	"github.com/wellWINeo/MusicPlayerBackend/pkg/repository"
 )

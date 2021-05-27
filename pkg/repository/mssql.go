@@ -8,16 +8,16 @@ import (
 )
 
 var (
-	usersTable = "Users"
-	tracksTable = "Tracks"
-	genreTable = "Genre"
-	likesTable = "Likes"
-	historyTable = "History"
-	referalsTable = "Referals"
-	ownsTable = "Owns"
-	playlistTable = "Playlist"
-	contentTable = "PlaylistContent"
-	artistsTable = "Artists"
+	usersTable,
+	trackTable,
+	genreTable,
+	likesTable,
+	histroryTable,
+	referalsTable,
+	ownsTable,
+	playlistTable,
+	contentTable,
+	artistsTable string
 )
 
 type Config struct {
@@ -29,6 +29,7 @@ type Config struct {
 }
 
 func NewMSSQLDB(cfg Config) (*sqlx.DB, error) {
+	initTableNames(cfg.DBName)
 	u := &url.URL{
 		Scheme: "sqlserver",
 		User:   url.UserPassword(cfg.Username, cfg.Password),
@@ -44,4 +45,17 @@ func NewMSSQLDB(cfg Config) (*sqlx.DB, error) {
 		return nil, err
 	}
 	return db, nil
+}
+
+func initTableNames(db_name string) {
+	usersTable = db_name + ".dbo.Users"
+	trackTable = db_name + ".dbo.Tracks"
+	genreTable = db_name + ".dbo.Genre"
+	likesTable = db_name + ".dbo.Likes"
+	histroryTable = db_name + ".dbo.History"
+	referalsTable = db_name + ".dbo.Referals"
+	ownsTable = db_name + ".dbo.Owns"
+	playlistTable = db_name + ".dbo.Playlist"
+	contentTable = db_name + ".dbo.PlaylistContent"
+	artistsTable = db_name + ".dbo.Artists"
 }

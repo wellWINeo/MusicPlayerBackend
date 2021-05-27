@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 	"github.com/wellWINeo/MusicPlayerBackend"
 )
 
@@ -41,6 +42,7 @@ func (h *Handler) signIn(ctx *gin.Context) {
 	token, err := h.services.GenerateToken(input.Username, input.Password)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
+		logrus.Print("here")
 		return
 	}
 

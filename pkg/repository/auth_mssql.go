@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	_ "github.com/sirupsen/logrus"
 	"github.com/wellWINeo/MusicPlayerBackend"
 )
 
@@ -17,19 +18,28 @@ func NewAuthMSSQL(db *sqlx.DB) *AuthMSSQL {
 
 func (a *AuthMSSQL) CreateUser(user MusicPlayerBackend.User) (int, error) {
 	var id int
-	query := fmt.Sprintf("insert into %s(username, email, passwd) values ($1, $2, $3)",
+	query := fmt.Sprintf("insert into %s(username, email, passwd) output INSERTED.id_user values(:username, :email, :passwd);",
 		usersTable)
-	row := a.db.QueryRow(query, user.Username, user.Email, user.Password)
-	err := row.Scan(&id)
+	//row, err := a.db.NamedQuery(query, user)
+	result, err := a.db.NamedQuery(query, user)
+	result.Scan(&id)
+	//logrus.Println(query)
+	//row := a.db.QueryRow(query, user.Username, user.Email, user.Password)
 	if err != nil {
 		return 0, err
 	}
+	// if row.Next() {
+	// 	err = row.Scan(&id)
+	// 	if err != nil {
+	// 		return 0, err
+	// 	}
+	// }
 	return id, nil
 }
 
 func (a *AuthMSSQL) GetUser(username, password string) (MusicPlayerBackend.User, error) {
 	var user MusicPlayerBackend.User
-	query := fmt.Sprintf("select id_user from %s where username=$1 and email=$2", usersTable)
+	query := fmt.Sprintf("select * from %s where username=@p1 and passwd=@p2;", usersTable)
 	err := a.db.Get(&user, query, username, password)
 	return user, err
 }
