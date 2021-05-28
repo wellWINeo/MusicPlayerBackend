@@ -43,6 +43,7 @@ create table Users
     email varchar(100),
     passwd varchar(100) not null,
     is_premium bit default 0,
+    is_verified bit default 0,
     constraint pk_user_id primary key clustered (id_user)
 
 );
