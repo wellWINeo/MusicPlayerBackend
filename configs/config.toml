@@ -6,3 +6,7 @@ host = "localhost"
 port = 1433
 username = "SA"
 dbname = "MusicPlayer"
+
+[mail]
+host = "smtp.mail.ru"
+port = 587

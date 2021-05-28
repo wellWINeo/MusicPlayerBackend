@@ -18,11 +18,10 @@ func NewAuthMSSQL(db *sqlx.DB) *AuthMSSQL {
 
 func (a *AuthMSSQL) CreateUser(user MusicPlayerBackend.User) (int, error) {
 	var id int
-	query := fmt.Sprintf("insert into %s(username, email, passwd) output INSERTED.id_user values(:username, :email, :passwd);",
+	query := fmt.Sprintf("insert into %s(username, email, passwd) output INSERTED.id_user values(@p1, @p2, @p3);",
 		usersTable)
-	result, err := a.db.NamedQuery(query, user)
-	result.Scan(&id)
-	if err != nil {
+	row := a.db.QueryRow(query, user.Username, user.Email, user.Password)
+	if err := row.Scan(&id); err != nil {
 		return 0, err
 	}
 	return id, nil
@@ -57,5 +56,13 @@ func (a *AuthMSSQL) DeleteUser(id int) error {
 	// deleting user
 	query = fmt.Sprintf("delete from %s where id_user=@p1", usersTable)
 	_, err = a.db.Exec(query, id)
+	return err
+}
+
+func (a *AuthMSSQL) UpdateUser(user MusicPlayerBackend.User) error {
+	query := fmt.Sprintf("update %s set username=@p1, email=@p2, passwd=@p3, "+
+		"is_premium=@p4",
+		usersTable)
+	_, err := a.db.Exec(query, user.Username, user.Email, user.Password, user.IsPremium)
 	return err
 }

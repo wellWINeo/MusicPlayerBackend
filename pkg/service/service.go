@@ -9,9 +9,11 @@ type Authorization interface {
 	CreateUser(user MusicPlayerBackend.User) (int, error)
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
-	//Update(user MusicPlayerBackend.User) error
+	UpdateUser(user MusicPlayerBackend.User) error
 	DeleteUser(id int) error
 	GetUser(id int) (MusicPlayerBackend.User, error)
+	SendCode(user MusicPlayerBackend.User) error
+	Verify(code int) (MusicPlayerBackend.User, bool)
 }
 
 type Playlist interface {
@@ -28,8 +30,8 @@ type Service struct {
 	TrackList
 }
 
-func NewService(repos *repository.Repository) *Service {
+func NewService(repos *repository.Repository, mailConfig MailConfig) *Service {
 	return &Service{
-		Authorization: NewAuthService(repos.Authorization),
+		Authorization: NewAuthService(repos.Authorization, mailConfig),
 	}
 }

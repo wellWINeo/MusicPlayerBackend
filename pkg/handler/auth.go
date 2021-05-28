@@ -21,6 +21,7 @@ func (h *Handler) signUp(ctx *gin.Context) {
 		return
 	}
 
+	logrus.Println(id)
 	ctx.JSON(http.StatusOK, map[string] interface{}{
 		"id": id,
 	})

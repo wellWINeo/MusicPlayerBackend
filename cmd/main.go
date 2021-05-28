@@ -36,8 +36,14 @@ func main() {
 		logrus.Fatalf("Can't connect to DB: %s", err.Error())
 	}
 
+	mailConfig := service.MailConfig{
+		Host: viper.GetString("mail.host"),
+		Port: viper.GetInt("mail.port"),
+		MailBox: os.Getenv("MAIL_BOX"),
+		Password: os.Getenv("MAIL_PASSWORD"),
+	}
 	repos := repository.NewRepository(db)
-	services := service.NewService(repos)
+	services := service.NewService(repos, mailConfig)
 	handler := handler.NewHandler(services)
 	srv := new(MusicPlayerBackend.Server)
 	logrus.Printf("Running on port: %d", viper.GetInt("server.port"))

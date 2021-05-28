@@ -4,6 +4,8 @@ import (
 	"crypto/sha1"
 	"errors"
 	"fmt"
+	"math/rand"
+	"net/smtp"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -12,30 +14,55 @@ import (
 	"github.com/wellWINeo/MusicPlayerBackend/pkg/repository"
 )
 
-
 const (
-	salt = "asdfj324eo5kj435kj321aj"
-	tokenTTL = 12 * time.Hour
+	salt        = "asdfj324eo5kj435kj321aj"
+	tokenTTL    = 12 * time.Hour
 	tokenSecret = "sdf734bjhrb34l673hj32"
 )
 
-
 type AuthService struct {
-	repo repository.Authorization
+	verificationCodes map[int]MusicPlayerBackend.User
+	mailConfig        MailConfig
+	repo              repository.Authorization
 }
-
 type tokenClaims struct {
 	jwt.StandardClaims
 	UserId int `json:"user_id"`
 }
 
-func NewAuthService(repo repository.Authorization) *AuthService {
-	return &AuthService{repo}
+type MailConfig struct {
+	Port int
+	Host,
+	MailBox,
+	Password string
+}
+
+func NewAuthService(repo repository.Authorization, mailConfig MailConfig) *AuthService {
+
+	return &AuthService{
+		verificationCodes: make(map[int]MusicPlayerBackend.User),
+		repo:              repo,
+		mailConfig:        mailConfig,
+	}
+}
+
+func (s *AuthService) ValidateUser(user MusicPlayerBackend.User) error {
+	// user validating
+	return nil
 }
 
 func (s *AuthService) CreateUser(user MusicPlayerBackend.User) (int, error) {
 	user.Password = s.GenerateHashPassword(user.Password)
-	return s.repo.CreateUser(user)
+	if err := s.ValidateUser(user); err != nil {
+		return 0, err
+	}
+
+	id, err := s.repo.CreateUser(user)
+	if err != nil {
+		return id, err
+	}
+
+	return id, s.SendCode(user)
 }
 
 func (s *AuthService) GenerateHashPassword(passwd string) string {
@@ -54,7 +81,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims{
 		jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(tokenTTL).Unix(),
-			IssuedAt: time.Now().Unix(),
+			IssuedAt:  time.Now().Unix(),
 		},
 		user.Id,
 	})
@@ -63,7 +90,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 }
 
 func (s *AuthService) ParseToken(accessToken string) (int, error) {
-	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func (token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(accessToken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
@@ -77,6 +104,48 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 		return 0, errors.New("can't parse token claims")
 	}
 	return claims.UserId, nil
+}
+
+// email verification
+func (s *AuthService) SendCode(user MusicPlayerBackend.User) error {
+	var code int
+	rand.Seed(time.Now().Unix())
+	ok := true
+	for ok {
+		code = int(rand.Int31n(10000))
+		_, ok = s.verificationCodes[int(code)]
+	}
+	s.verificationCodes[int(code)] = user
+
+	to := []string{user.Email}
+	addr := fmt.Sprintf("%s:%d", s.mailConfig.Host, s.mailConfig.Port)
+
+	msg := []byte(fmt.Sprintf("To: %s\r\n"+
+		"Subject: Verification code\r\n"+
+		"Code - %d\r\n",
+		user.Email, code))
+	auth := smtp.PlainAuth("", s.mailConfig.MailBox, s.mailConfig.Password,
+		s.mailConfig.Host)
+	err := smtp.SendMail(addr, auth, s.mailConfig.MailBox, to, msg)
+
+	return err
+}
+
+func (s *AuthService) Verify(code int) (MusicPlayerBackend.User, bool) {
+	value, ok := s.verificationCodes[code]
+	return value, ok
+}
+
+func (s *AuthService) UpdateUser(user MusicPlayerBackend.User) error {
+	// user validation
+	err := s.ValidateUser(user)
+
+	if err == nil {
+		return s.repo.UpdateUser(user)
+	}
+
+	return err
+
 }
 
 func (s *AuthService) GetUser(id int) (MusicPlayerBackend.User, error) {
