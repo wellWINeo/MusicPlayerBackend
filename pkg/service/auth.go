@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"math/rand"
 	"net/smtp"
+	"regexp"
 	"time"
 
 	jwt "github.com/dgrijalva/jwt-go"
@@ -18,6 +19,16 @@ const (
 	salt        = "asdfj324eo5kj435kj321aj"
 	tokenTTL    = 12 * time.Hour
 	tokenSecret = "sdf734bjhrb34l673hj32"
+	regexMail = `^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$`
+	regexOnlyASCII = `^[\x00-\x7F]*$`
+)
+
+var (
+	EmptyPassword = errors.New("Empty password field")
+	InvalidCharsInPassword = errors.New("Invalid chars in password")
+	EmptyUsername = errors.New("Empty username field")
+	InvalidCharsInUsername = errors.New("Invalid chars in username")
+	NotValidMail = errors.New("Invalid email field")
 )
 
 type AuthService struct {
@@ -47,7 +58,29 @@ func NewAuthService(repo repository.Authorization, mailConfig MailConfig) *AuthS
 }
 
 func (s *AuthService) ValidateUser(user MusicPlayerBackend.User) error {
-	// user validating
+	if user.Username == "" {
+		return EmptyUsername
+	}
+
+	matched, err := regexp.MatchString(regexMail, user.Email)
+	if !matched || err != nil {
+		return NotValidMail
+	}
+
+	matched, err = regexp.MatchString(regexOnlyASCII, user.Username)
+	if !matched || err != nil {
+		return InvalidCharsInUsername
+	}
+
+	if user.Password == "" {
+		return EmptyPassword
+	}
+
+	matched, err = regexp.MatchString(regexOnlyASCII, user.Password)
+	if !matched || err != nil {
+		return InvalidCharsInPassword
+	}
+
 	return nil
 }
 
@@ -140,7 +173,7 @@ func (s *AuthService) UpdateUser(user MusicPlayerBackend.User) error {
 	// user validation
 	err := s.ValidateUser(user)
 
-	if err == nil {
+	if err == nil || err == EmptyPassword {
 		return s.repo.UpdateUser(user)
 	}
 

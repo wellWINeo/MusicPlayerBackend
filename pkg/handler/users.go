@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/wellWINeo/MusicPlayerBackend"
 )
 
 func (h *Handler) getUser(c *gin.Context) {
@@ -25,17 +26,31 @@ func (h *Handler) getUser(c *gin.Context) {
 }
 
 func (h *Handler) updateUser(c *gin.Context) {
+	var user MusicPlayerBackend.User
+	value, ok := c.Get(userIdCtx)
+	if !ok {
+		newErrorResponse(c, http.StatusUnauthorized, "user id in token not found")
+		return
+	}
+	if err := c.BindJSON(&user); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+	}
 
-}
+	userId := value.(int)
+	user.Id = userId
 
-func (h *Handler) createUser(c *gin.Context) {
+	if err := h.services.UpdateUser(user); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+	}
 
+	c.Status(http.StatusOK)
 }
 
 func (h *Handler) deleteUser(c *gin.Context) {
 	id, ok := c.Get(userIdCtx)
 	if !ok {
-		newErrorResponse(c, http.StatusInternalServerError, "user id not found")
+		newErrorResponse(c, http.StatusUnauthorized, "user id in token not found")
+		return
 	}
 	h.services.DeleteUser(id.(int))
 }
