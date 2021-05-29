@@ -12,30 +12,41 @@ set ansi_nulls on
 go
 
 
--- create database
+--
+-- DATABASE
+--
 drop database if exists MusicPlayer;
 create database MusicPlayer;
 use MusicPlayer
 go
 
-
+--
+-- TABLES
+--
 create table Artists
 (
     id_artist int not null identity(1,1),
-    name varchar(100),
+    [name] varchar(100) unique,
     constraint pk_artists_id primary key clustered (id_artist)
 );
---go
+go
 
 create table Genre
 (
     id_genre int not null identity(1,1),
-    title varchar(100),
+    title varchar(100) unique,
     constraint fk_genre_id primary key clustered (id_genre)
 );
 go
 
--- creating user table
+create table TrackData
+(
+    id_track_data int not null identity(1,1),
+    hash varchar(256) unique,
+    [data] varbinary(max)
+    constraint pk_track_data_id primary key clustered (id_track_data)
+);
+
 create table Users
 (
     id_user int not null identity(1,1),
@@ -45,27 +56,28 @@ create table Users
     is_premium bit default 0,
     is_verified bit default 0,
     constraint pk_user_id primary key clustered (id_user)
-
 );
---go
+go
 
 -- creating tracks table
 create table Tracks
 (
     id_track int not null identity(1,1),
     title varchar(50) not null,
-    audio varbinary(max),
-    hash varchar(256) not null,
+    [data] int,
     artist_id int,
     [year] int,
     genre_id int,
     has_video bit,
+    owner_id int,
     ---
-    constraint pk_track_id primary key clustered (id_track),
+    constraint pk_id_track_ primary key clustered (id_track),
+    constraint fk_track_id foreign key ([data]) references TrackData (id_track_data),
     constraint fk_tracks_artist foreign key (artist_id) references Artists (id_artist),
-    constraint fk_tracks_genre foreign key (genre_id) references Genre (id_genre)
+    constraint fk_tracks_genre foreign key (genre_id) references Genre (id_genre),
+    constraint fk_tracks_owner foreign key (owner_id) references Users (id_user)
 );
---go
+go
 
 create table Likes
 (
@@ -78,7 +90,7 @@ create table Likes
     constraint fk_likes_track foreign key (track_id) references Tracks (id_track),
     constraint fk_likes_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
---go
+go
 
 create table History
 (
@@ -91,7 +103,7 @@ create table History
     constraint fk_history_track foreign key (track_id) references Tracks (id_track),
     constraint fk_history_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
---go
+go
 
 create table Referals
 (
@@ -103,7 +115,7 @@ create table Referals
     constraint fk_referals_old_user foreign key (old_user_id) references Users (id_user),
     constraint fk_referals_new_user foreign key (new_user_Id) references Users (id_user)
 );
---go
+go
 
 create table Playlist
 (
@@ -114,19 +126,7 @@ create table Playlist
     constraint pk_playlist_id primary key clustered (id_playlist),
     constraint fk_playlist_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
---go
-
-create table Owns
-(
-    id_own int not null identity(1,1),
-    track_id int,
-    [user_id] int,
-    ---
-    constraint fk_owns_id primary key (id_own),
-    constraint fk_owns_track foreign key (track_id) references Tracks (id_track),
-    constraint fk_owns_user foreign key ([user_id]) references Users (id_user) on delete cascade
-);
---go
+go
 
 create table PlaylistContent
 (
@@ -138,12 +138,56 @@ create table PlaylistContent
     constraint fk_playlist_content_track foreign key (track_id) references Tracks (id_track),
     constraint fk_content_playlist foreign key (playlist_id) references Playlist (id_playlist)
 );
---go
+go
 
--- triggers
-create trigger.Users_DELETE
-on Users
-after delete
+--
+-- PROCEDURES
+--
+
+-- procedure to add new track
+create procedure AddTrack
+    @track_title varchar(50),
+    @artist_name varchar(100),
+    @genre_name varchar(100),
+    @track_year int,
+    @track_has_video bit,
+    @owner_id int
 as
-delete from Referals
-where new_user_id=(select id_user from inserted) or old_user_id=(select id_user from inserted)
+    begin
+
+    declare @genre_id int, @artist_id int, @track_id int;
+    declare @table_id table (id int);
+
+    -- insert new value or get id of existing
+    begin try
+          insert into Genre
+          output INSERTED.id_genre into @table_id
+          values(@genre_name)
+          select @genre_id=id from @table_id
+    end try
+    begin catch
+          select @genre_id = id_genre
+          from Genre
+          where title=@genre_name
+    end catch
+
+    begin try
+          insert into Artists
+          output INSERTED.id_artist into @table_id
+          values(@artist_name)
+          select @artist_id=id from @table_id
+    end try
+    begin catch
+          select @artist_id=id_artist
+          from Artists
+          where [name]=@artist_name
+    end catch
+
+    insert into Tracks(title, artist_id, [year],
+                       genre_id, has_video, owner_id)
+    output INSERTED.id_track
+    values(@track_title, @artist_id, @track_year,
+           @genre_id, @track_has_video, @owner_id)
+
+
+    end;

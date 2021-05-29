@@ -20,14 +20,25 @@ type Playlist interface {
 
 }
 
-type TrackList interface {
+type Artist interface {
+	CreateArtist(name string) (int, error)
+	GetArtistNameById(artistId int) (string, error)
+	GetArtistIdByName(name string) (int, error)
+}
 
+type Tracks interface {
+	Create(userId int, track MusicPlayerBackend.Track) (int, error)
+	// Get(userId, trackId int) (MusicPlayerBackend.Track, error)
+	// Update(userId int, track MusicPlayerBackend.Track) error
+	// Delete(userId int, track MusicPlayerBackend.Track) error
+	// Upload(userId, trackId int, blob []byte) error
+	// Download(userId int) ([]byte, error)
 }
 
 type Service struct {
 	Authorization
 	Playlist
-	TrackList
+	Tracks
 }
 
 func NewService(repos *repository.Repository, mailConfig MailConfig) *Service {
