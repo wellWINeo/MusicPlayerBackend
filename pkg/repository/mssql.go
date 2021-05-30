@@ -8,6 +8,7 @@ import (
 )
 
 var (
+	// tables
 	usersTable,
 	trackTable,
 	genreTable,
@@ -18,7 +19,10 @@ var (
 	playlistTable,
 	contentTable,
 	trackDataTable,
-	artistsTable string
+	artistsTable,
+	// stored procedures
+	addTrackProc,
+	updateTrackProc string
 )
 
 type Config struct {
@@ -49,6 +53,7 @@ func NewMSSQLDB(cfg Config) (*sqlx.DB, error) {
 }
 
 func initTableNames(db_name string) {
+	// init tables names
 	usersTable = db_name + ".dbo.Users"
 	trackTable = db_name + ".dbo.Tracks"
 	genreTable = db_name + ".dbo.Genre"
@@ -60,4 +65,7 @@ func initTableNames(db_name string) {
 	contentTable = db_name + ".dbo.PlaylistContent"
 	trackDataTable = db_name + ".dbo.TrackData"
 	artistsTable = db_name + ".dbo.Artists"
+	// init procedures name
+	addTrackProc = db_name + ".dbo.AddTrack"
+	updateTrackProc = db_name + ".dbp.UpdateTrack"
 }

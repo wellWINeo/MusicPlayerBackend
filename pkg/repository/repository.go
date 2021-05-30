@@ -17,23 +17,11 @@ type Playlist interface {
 
 }
 
-type Artist interface {
-	CreateArtist(name string) (int, error)
-	GetArtistNameById(artistId int) (string, error)
-	GetArtistIdByName(name string) (int, error)
-}
-
-type Genre interface {
-	CreateGenre(name string) (int, error)
-	GetGenreByName(name string) (int, error)
-	DeleteGenre(genreId int) error
-}
-
 type Tracks interface {
 	CreateTrack(userId int, track MusicPlayerBackend.Track) (int, error)
-	// Get()
-	// Update()
-	// Delete()
+	GetTrack(trackId int) (MusicPlayerBackend.Track, error)
+	UpdateTrack(track MusicPlayerBackend.Track) error
+	DeleteTrack(trackId int) error
 	// UploadTrack()
 	// DownloadTrack()
 }
@@ -47,5 +35,6 @@ type Repository struct {
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthMSSQL(db),
+		Tracks: NewTracksMSSQL(db),
 	}
 }

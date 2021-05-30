@@ -20,17 +20,11 @@ type Playlist interface {
 
 }
 
-type Artist interface {
-	CreateArtist(name string) (int, error)
-	GetArtistNameById(artistId int) (string, error)
-	GetArtistIdByName(name string) (int, error)
-}
-
 type Tracks interface {
-	Create(userId int, track MusicPlayerBackend.Track) (int, error)
-	// Get(userId, trackId int) (MusicPlayerBackend.Track, error)
-	// Update(userId int, track MusicPlayerBackend.Track) error
-	// Delete(userId int, track MusicPlayerBackend.Track) error
+	CreateTrack(userId int, track MusicPlayerBackend.Track) (int, error)
+	GetTrack(trackId int) (MusicPlayerBackend.Track, error)
+	UpdateTrack(track MusicPlayerBackend.Track) error
+	DeleteTrack(trackId int) error
 	// Upload(userId, trackId int, blob []byte) error
 	// Download(userId int) ([]byte, error)
 }
@@ -44,5 +38,6 @@ type Service struct {
 func NewService(repos *repository.Repository, mailConfig MailConfig) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization, mailConfig),
+		Tracks: NewTracksService(repos.Tracks),
 	}
 }

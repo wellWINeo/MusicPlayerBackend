@@ -35,7 +35,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		tracks := api.Group("/tracks")
 		{
 			tracks.GET("/all", h.getAllTracks)
-			tracks.GET("/:id/download", h.downloadTrack)
+			tracks.GET("/download/:id", h.downloadTrack)
+			//tracks.POST("/upload")
 			tracks.GET("/:id", h.getTrack)
 			tracks.PUT("/:id", h.updateTrack)
 			tracks.POST("/", h.createTrack)

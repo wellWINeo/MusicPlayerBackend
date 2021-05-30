@@ -1,16 +1,16 @@
 package MusicPlayerBackend
 
 type Track struct {
-	TrackId int    `json:"-"`
-	Title   string `json:"title" binding:"required"`
-	Hash    string `json:"-"`
-	Genre   string `json:"genre"`
+	TrackId int    `json:"-" db:"id_track"`
+	Title   string `json:"title" binding:"required" db:"title"`
+	Hash    string `json:"-" db:"hash"`
+	Genre   string `json:"genre" db:"genre_name"`
 	Artist
-	Year     int  `json:"year"`
-	HasVideo bool `json:"has_video,string"`
+	Year     int  `json:"year,string" db:"year"`
+	HasVideo bool `json:"has_video,string" db:"has_video"`
 }
 
 type Artist struct {
 	ArtistId int    `json:"-"`
-	Name     string `json:"artist" binding:"required"`
+	Name     string `json:"artist" binding:"required" db:"name"`
 }

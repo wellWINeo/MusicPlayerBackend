@@ -6,21 +6,25 @@ import (
 )
 
 type TracksService struct {
-	repoTracks repository.Tracks
-	repoArtist repository.Artist
-	repoGenre  repository.Genre
+	repo repository.Tracks
 }
 
-func NewTracksService(repoTracks repository.Tracks,
-	repoArtist repository.Artist,
-	repoGenre repository.Genre) *TracksService {
-	return &TracksService{
-		repoTracks: repoTracks,
-		repoArtist: repoArtist,
-		repoGenre:  repoGenre,
-	}
+func NewTracksService(repo repository.Tracks) *TracksService {
+	return &TracksService{repo: repo}
 }
 
-func (t *TracksService) Create(userId int, track MusicPlayerBackend.Track) (int, error) {
-	return 0, nil
+func (t *TracksService) CreateTrack(userId int, track MusicPlayerBackend.Track) (int, error) {
+	return t.repo.CreateTrack(userId, track)
+}
+
+func (t *TracksService) GetTrack(trackId int) (MusicPlayerBackend.Track, error) {
+	return t.repo.GetTrack(trackId)
+}
+
+func (t *TracksService) UpdateTrack(track MusicPlayerBackend.Track) error {
+	return t.repo.UpdateTrack(track)
+}
+
+func (t *TracksService) DeleteTrack(trackId int) error {
+	return t.repo.DeleteTrack(trackId)
 }
