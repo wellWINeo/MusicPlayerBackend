@@ -1,9 +1,32 @@
 package handler
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/gin-gonic/gin"
+)
 
 func (h *Handler) setLike(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
+		return
+	}
 
+	trackId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "can't parse param")
+		return
+	}
+
+	err = h.services.Like.SetLike(trackId, userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 func (h *Handler) unsetLike(c *gin.Context) {

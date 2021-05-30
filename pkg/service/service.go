@@ -23,15 +23,23 @@ type Playlist interface {
 type Tracks interface {
 	CreateTrack(userId int, track MusicPlayerBackend.Track) (int, error)
 	GetTrack(trackId int) (MusicPlayerBackend.Track, error)
+	GetAllTracksId(userId int) ([]int, error)
+	GetAllTracks(userId int) ([]MusicPlayerBackend.Track, error)
 	UpdateTrack(track MusicPlayerBackend.Track) error
 	DeleteTrack(trackId int) error
 	// Upload(userId, trackId int, blob []byte) error
 	// Download(userId int) ([]byte, error)
 }
 
+type Like interface {
+	SetLike(trackId, userId int) error
+	UnsetLike(trackId, userId int) error
+}
+
 type Service struct {
 	Authorization
 	Playlist
+	Like
 	Tracks
 }
 
@@ -39,5 +47,6 @@ func NewService(repos *repository.Repository, mailConfig MailConfig) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization, mailConfig),
 		Tracks: NewTracksService(repos.Tracks),
+		Like: NewLikeService(repos.Like),
 	}
 }

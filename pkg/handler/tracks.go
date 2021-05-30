@@ -9,15 +9,51 @@ import (
 )
 
 func (h *Handler) getAllTracks(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
+		return
+	}
+	allTracks, err := h.services.GetAllTracks(userId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 
+	c.JSON(http.StatusOK, allTracks)
 }
 
 func (h *Handler) getTrack(c *gin.Context) {
+	trackId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "can't parse param")
+		return
+	}
+
+	track, err := h.services.Tracks.GetTrack(trackId)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, track)
 
 }
 
 func (h *Handler) updateTrack(c *gin.Context) {
+	var input MusicPlayerBackend.Track
 
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if err := h.services.Tracks.UpdateTrack(input); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.Status(http.StatusOK)
 }
 
 func (h *Handler) createTrack(c *gin.Context) {

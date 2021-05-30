@@ -32,16 +32,58 @@ func (t *TracksMSSQL) GetTrack(trackId int) (MusicPlayerBackend.Track, error) {
 	var track MusicPlayerBackend.Track
 	query := fmt.Sprintf(`select id_track, Tracks.title, year, has_video,
 						name, Genre.title as genre_name from %s
-						join Artists on id_artist=artist_id
-						join Genre on id_genre=genre_id
+						join %s on id_artist=artist_id
+						join %s on id_genre=genre_id
 						where id_track=@p1`,
-		trackTable)
-	row := t.db.QueryRow(query, trackId)
-	if err := row.Scan(&track); err != nil {
+		trackTable, artistsTable, genreTable)
+	if err := t.db.Get(&track, query, trackId); err != nil {
 		return track, err
 	}
 
 	return track, nil
+}
+
+func (t *TracksMSSQL) GetAllTracksId(userId int) ([]int, error) {
+	response := []int{}
+
+	query := fmt.Sprintf("select id_track from %s where owner_id=@p1", trackTable)
+	rows, err := t.db.Query(query, userId)
+	if err != nil {
+		return response, err
+	}
+
+	for rows.Next() {
+		var id int
+
+		err := rows.Scan(&id)
+		if err != nil {
+			return []int{}, err
+		}
+
+		response = append(response, id)
+	}
+
+	return response, nil
+}
+
+func (t *TracksMSSQL) GetAllTracks(userId int) ([]MusicPlayerBackend.Track, error) {
+	response := []MusicPlayerBackend.Track{}
+
+	query := fmt.Sprintf(`select id_track, Tracks.title, year, has_video,
+						name, Genre.title as genre_name from %s
+						join %s on id_artist=artist_id
+						join %s on id_genre=genre_id
+						where owner_id=@p1`,
+		trackTable, artistsTable, genreTable)
+
+	//err := t.db.Get(&response, query, userId)
+	err := t.db.Select(&response, query, userId)
+	if err != nil {
+		return []MusicPlayerBackend.Track{}, err
+	}
+
+
+	return response, nil
 }
 
 func (t *TracksMSSQL) UpdateTrack(track MusicPlayerBackend.Track) error {

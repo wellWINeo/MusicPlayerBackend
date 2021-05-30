@@ -75,7 +75,7 @@ create table Tracks
     constraint fk_track_id foreign key ([data]) references TrackData (id_track_data),
     constraint fk_tracks_artist foreign key (artist_id) references Artists (id_artist),
     constraint fk_tracks_genre foreign key (genre_id) references Genre (id_genre),
-    constraint fk_tracks_owner foreign key (owner_id) references Users (id_user)
+    constraint fk_tracks_owner foreign key (owner_id) references Users (id_user) on delete cascade
 );
 go
 
@@ -84,7 +84,7 @@ create table Likes
     id_likes int not null identity(1,1),
     track_id int,
     [user_id] int,
-    [time] date,
+    [time] smalldatetime,
     ---
     constraint pk_likes_id primary key clustered (id_likes),
     constraint fk_likes_track foreign key (track_id) references Tracks (id_track),

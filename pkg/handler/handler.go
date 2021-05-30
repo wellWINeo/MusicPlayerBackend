@@ -32,7 +32,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			users.DELETE("/", h.deleteUser)
 		}
 
-		tracks := api.Group("/tracks")
+		tracks := api.Group("/tracks", h.accessCheck)
 		{
 			tracks.GET("/all", h.getAllTracks)
 			tracks.GET("/download/:id", h.downloadTrack)
@@ -43,7 +43,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			tracks.DELETE("/:id", h.deleteTrack)
 		}
 
-		playlists := api.Group("/playlists")
+		playlists := api.Group("/playlists", h.accessCheck)
 		{
 			playlists.GET("/all", h.getAllPlaylists)
 
@@ -54,13 +54,13 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 		}
 
-		likes := api.Group("/like")
+		likes := api.Group("/like", h.accessCheck)
 		{
 			likes.POST("/:id", h.setLike)
 			likes.DELETE("/:id", h.unsetLike)
 		}
 
-		history := api.Group("/history")
+		history := api.Group("/history", h.accessCheck)
 		{
 			history.POST("/:id", h.addToHistory)
 			history.GET("/", h.getHistory)

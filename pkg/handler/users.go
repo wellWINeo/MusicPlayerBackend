@@ -52,5 +52,12 @@ func (h *Handler) deleteUser(c *gin.Context) {
 		newErrorResponse(c, http.StatusUnauthorized, "user id in token not found")
 		return
 	}
-	h.services.DeleteUser(id.(int))
+
+	err := h.services.DeleteUser(id.(int))
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.Status(http.StatusOK)
 }

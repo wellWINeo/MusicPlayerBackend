@@ -3,6 +3,7 @@ package handler
 import (
 	"errors"
 	"net/http"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -35,6 +36,31 @@ func (h *Handler) userIdentity(c *gin.Context) {
 	}
 
 	c.Set(userIdCtx, userId)
+}
+
+func (h *Handler) accessCheck(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		return
+	}
+
+	// skip if target id not specified
+	targetId, err := strconv.Atoi(c.Param("id"))
+	if targetId == 0 {
+		return
+	}
+
+	sliceId, err := h.services.Tracks.GetAllTracksId(userId)
+
+	for _, value := range sliceId {
+		if value == targetId {
+			return
+		}
+	}
+
+	// value not found, access denied
+	newErrorResponse(c, http.StatusForbidden, "Access denied")
+	return
 }
 
 func getUserId(c *gin.Context) (int, error) {
