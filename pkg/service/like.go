@@ -15,5 +15,9 @@ func (l *LikeService) SetLike(trackId, userId int) error {
 }
 
 func (l *LikeService) UnsetLike(trackId, userId int) error {
-	return nil
+	return l.repo.UnsetLike(trackId, userId)
+}
+
+func (l *LikeService) GetAll(trackId int) ([]int, error) {
+	return l.repo.GetAll(trackId)
 }

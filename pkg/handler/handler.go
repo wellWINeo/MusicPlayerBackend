@@ -58,6 +58,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		{
 			likes.POST("/:id", h.setLike)
 			likes.DELETE("/:id", h.unsetLike)
+			likes.GET("/", h.getAllLikes)
 		}
 
 		history := api.Group("/history", h.accessCheck)

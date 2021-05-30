@@ -30,6 +30,7 @@ type Tracks interface {
 
 type Like interface {
 	SetLike(trackId, userId int) error
+	GetAll(userId int) ([]int, error)
 	UnsetLike(trackId, userId int) error
 }
 

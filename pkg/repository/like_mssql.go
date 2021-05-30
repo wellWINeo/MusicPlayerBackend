@@ -24,5 +24,18 @@ func (l *LikeMSSQL) SetLike(trackId, userId int) error {
 }
 
 func (l *LikeMSSQL) UnsetLike(trackId, userId int) error {
-	return nil
+	query := fmt.Sprintf("delete from %s where track_id=@p1 and user_id=@p2",
+		likesTable)
+	_, err := l.db.Exec(query, trackId, userId)
+	return err
+}
+
+func (l *LikeMSSQL) GetAll(userId int) ([]int, error) {
+	var likes []int
+	query := fmt.Sprintf("select id_likes from %s where user_id=@p1", likesTable)
+	if err := l.db.Select(&likes, query, userId); err != nil {
+		return []int{}, err
+	}
+
+	return likes, nil
 }
