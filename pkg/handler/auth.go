@@ -2,7 +2,6 @@ package handler
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
@@ -53,8 +52,8 @@ func (h *Handler) signIn(ctx *gin.Context) {
 }
 
 type VerifyInput struct {
-	UserId string `json:"user_id"`
-	Code   string `json:"code"`
+	UserId int `json:"user_id,string" binding:"required"`
+	Code   int `json:"code,string" binding:"required"`
 }
 
 func (h *Handler) verify(ctx *gin.Context) {
@@ -65,25 +64,14 @@ func (h *Handler) verify(ctx *gin.Context) {
 		return
 	}
 
-	userId, err := strconv.Atoi(input.UserId)
-	if err != nil {
-		newErrorResponse(ctx, http.StatusBadRequest, "Wrong type of value (user_id)")
-		return
-	}
 
-	userCode, err := strconv.Atoi(input.Code)
-	if err != nil {
-		newErrorResponse(ctx, http.StatusBadRequest, "Wrong type of value (code)")
-		return
-	}
-
-	user, err := h.services.GetUser(userId)
+	user, err := h.services.GetUser(input.UserId)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	value, ok := h.services.Verify(userCode)
+	value, ok := h.services.Verify(input.Code)
 	if !ok {
 		newErrorResponse(ctx, http.StatusInternalServerError, "No user with such code")
 		return
