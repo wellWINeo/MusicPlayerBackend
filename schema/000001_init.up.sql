@@ -68,7 +68,8 @@ create table Tracks
     artist_id int,
     [year] int,
     genre_id int,
-    has_video bit,
+    has_video bit default 0,
+    is_liked bit default 0,
     owner_id int,
     ---
     constraint pk_id_track_ primary key clustered (id_track),
@@ -79,25 +80,13 @@ create table Tracks
 );
 go
 
-create table Likes
-(
-    id_likes int not null identity(1,1),
-    track_id int,
-    [user_id] int,
-    [time] smalldatetime,
-    ---
-    constraint pk_likes_id primary key clustered (id_likes),
-    constraint fk_likes_track foreign key (track_id) references Tracks (id_track),
-    constraint fk_likes_user foreign key ([user_id]) references Users (id_user) on delete cascade
-);
-go
 
 create table History
 (
     id_history int not null identity(1,1),
     track_id int,
     [user_id] int,
-    [time] date,
+    [time] datetime1,
     ---
     constraint pk_history_id primary key clustered (id_history),
     constraint fk_history_track foreign key (track_id) references Tracks (id_track),

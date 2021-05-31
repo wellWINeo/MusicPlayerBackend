@@ -29,25 +29,27 @@ type Tracks interface {
 	DeleteTrack(trackId int) error
 	// Upload(userId, trackId int, blob []byte) error
 	// Download(userId int) ([]byte, error)
+	SetLike(trackId int) error
+	GetAllLikes(userId int) ([]int, error)
 }
 
-type Like interface {
-	SetLike(trackId, userId int) error
-	GetAll(userId int) ([]int, error)
-	UnsetLike(trackId, userId int) error
+
+type History interface {
+	AddHistory(trackId, userId int) error
+	GetHistory(userId int) ([]MusicPlayerBackend.History, error)
 }
 
 type Service struct {
 	Authorization
 	Playlist
-	Like
 	Tracks
+	History
 }
 
 func NewService(repos *repository.Repository, mailConfig MailConfig) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization, mailConfig),
 		Tracks: NewTracksService(repos.Tracks),
-		Like: NewLikeService(repos.Like),
+		History: NewHistoryService(repos.History),
 	}
 }

@@ -99,5 +99,25 @@ func (h *Handler) uploadTrack(c *gin.Context) {
 }
 
 func (h *Handler) downloadTrack(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
+		return
+	}
 
+	trackId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "can't parse param")
+		return
+	}
+
+	if err := h.services.History.AddHistory(trackId, userId); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	// TODO
+	// downloading track to user
+
+	c.Status(http.StatusOK)
 }

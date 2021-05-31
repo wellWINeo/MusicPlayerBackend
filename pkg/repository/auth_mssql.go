@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	_ "github.com/sirupsen/logrus"
 	"github.com/wellWINeo/MusicPlayerBackend"
 )
@@ -25,6 +26,13 @@ func (a *AuthMSSQL) CreateUser(user MusicPlayerBackend.User) (int, error) {
 		return 0, err
 	}
 	return id, nil
+}
+
+func (a *AuthMSSQL) CreateReferal(oldUser, newUser int) error {
+	query := fmt.Sprintf("insert into %s values(@p1, @p2)", referalsTable)
+	logrus.Println(query)
+	_, err := a.db.Exec(query, oldUser, newUser)
+	return err
 }
 
 func (a *AuthMSSQL) GetUser(username, password string) (MusicPlayerBackend.User, error) {
@@ -60,15 +68,13 @@ func (a *AuthMSSQL) DeleteUser(id int) error {
 }
 
 func (a *AuthMSSQL) UpdateUser(user MusicPlayerBackend.User) error {
-	var query string
-	if user.Password == "" {
-		query = fmt.Sprintf("update %s set username=@p1, email=@p2, passwd=@p3, "+
-			"is_premium=@p4, is_verified=@p5",
-			usersTable)
-	} else {
-		query = fmt.Sprintf("update %s set username=@p1, email=@p2, " +
-			"is_premium=@p4, is_verified=@p5", usersTable)
-	}
+	// if user.Password == "" {
+	// 	query = fmt.Sprintf("update %s set username=@p1, email=@p2, passwd=@p3, "+
+	// 		"is_premium=@p4, is_verified=@p5",
+	// 		usersTable)
+	// } else {
+	query := fmt.Sprintf("update %s set username=@p1, email=@p2, " +
+		"is_premium=@p4, is_verified=@p5", usersTable)
 	_, err := a.db.Exec(query, user.Username, user.Email, user.Password,
 			user.IsPremium, user.IsVerified)
 	return err

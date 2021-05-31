@@ -12,9 +12,9 @@ type Like struct {
 
 type History struct {
 	HistoryId int `json:"-"`
-	TrackId int `json:"track_id"`
-	UserId int `json:"user_id"`
-	Time  time.Time `json:"time"`
+	TrackId int `json:"track_id" db:"track_id"`
+	UserId int `json:"user_id" db:"user_id"`
+	Time  time.Time `json:"time" db:"time"`
 }
 
 type Referals struct {

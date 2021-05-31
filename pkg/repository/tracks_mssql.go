@@ -98,3 +98,17 @@ func (t *TracksMSSQL) DeleteTrack(trackId int) error {
 	_, err := t.db.Exec(query, trackId)
 	return err
 }
+
+func (t *TracksMSSQL) SetLike(trackId int) error {
+	query := fmt.Sprintf("update %s set is_liked=1-is_liked where id_track=@p1", trackTable)
+	_, err := t.db.Exec(query, trackId)
+	return err
+}
+
+func (t *TracksMSSQL) GetAllLikes(userId int) ([]int, error) {
+	var likes []int
+	query := fmt.Sprintf("select id_track from %s where owner_id=@p1",
+		trackTable)
+	err := t.db.Select(&likes, query, userId)
+	return likes, err
+}

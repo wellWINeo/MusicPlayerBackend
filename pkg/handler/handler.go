@@ -61,11 +61,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			likes.GET("/", h.getAllLikes)
 		}
 
-		history := api.Group("/history", h.accessCheck)
-		{
-			history.POST("/:id", h.addToHistory)
-			history.GET("/", h.getHistory)
-		}
+		api.GET("/history", h.getHistory)
 	}
 
 	return router

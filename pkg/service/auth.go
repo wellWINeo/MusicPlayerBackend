@@ -95,6 +95,12 @@ func (s *AuthService) CreateUser(user MusicPlayerBackend.User) (int, error) {
 		return id, err
 	}
 
+	if user.Referal != 0 {
+		if err := s.repo.CreateReferal(user.Referal, id); err != nil {
+			return id, err
+		}
+	}
+
 	return id, s.SendCode(user)
 }
 
@@ -173,12 +179,14 @@ func (s *AuthService) UpdateUser(user MusicPlayerBackend.User) error {
 	// user validation
 	err := s.ValidateUser(user)
 
-	if err == nil || err == EmptyPassword {
-		return s.repo.UpdateUser(user)
+	if err != nil && err != EmptyPassword {
+		return err
 	}
 
-	return err
-
+	if err == EmptyPassword {
+		user.Password = s.GenerateHashPassword(user.Password)
+	}
+	return s.repo.UpdateUser(user)
 }
 
 func (s *AuthService) GetUser(id int) (MusicPlayerBackend.User, error) {

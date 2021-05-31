@@ -36,3 +36,11 @@ func (t *TracksService) GetAllTracks(userId int) ([]MusicPlayerBackend.Track, er
 func (t *TracksService) GetAllTracksId(userId int) ([]int, error){
 	return t.repo.GetAllTracksId(userId)
 }
+
+func (t *TracksService) SetLike(trackId int) error {
+	return t.repo.SetLike(trackId)
+}
+
+func (t *TracksService) GetAllLikes(userId int) ([]int, error) {
+	return t.repo.GetAllLikes(userId)
+}
