@@ -23,7 +23,7 @@ type Tracks interface {
 	GetTrack(trackId int) (MusicPlayerBackend.Track, error)
 	GetAllTracksId(userId int) ([]int, error)
 	GetAllTracks(userId int) ([]MusicPlayerBackend.Track, error)
-	UpdateTrack(track MusicPlayerBackend.Track) error
+	UpdateTrack(trackId int, track MusicPlayerBackend.Track) error
 	DeleteTrack(trackId int) error
 	// UploadTrack()
 	// DownloadTrack()

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 	"github.com/wellWINeo/MusicPlayerBackend"
 )
 
@@ -86,10 +87,12 @@ func (t *TracksMSSQL) GetAllTracks(userId int) ([]MusicPlayerBackend.Track, erro
 	return response, nil
 }
 
-func (t *TracksMSSQL) UpdateTrack(track MusicPlayerBackend.Track) error {
+func (t *TracksMSSQL) UpdateTrack(trackId int, track MusicPlayerBackend.Track) error {
 	query := fmt.Sprintf("exec %s @p1, @p2, @p3, @p4, @p5, @p6", updateTrackProc)
-	_, err := t.db.Exec(query, track.TrackId, track.Title, track.Name, track.Genre,
+	_, err := t.db.Exec(query, trackId, track.Title, track.Name, track.Genre,
 		track.Year, track.HasVideo)
+	logrus.Printf("exec %s %d, %s, %s, %s, %d, %b", updateTrackProc, trackId,
+		track.Title, track.Name, track.Genre, track.Year, track.HasVideo)
 	return err
 }
 

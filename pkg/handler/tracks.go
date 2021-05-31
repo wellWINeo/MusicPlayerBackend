@@ -43,12 +43,17 @@ func (h *Handler) getTrack(c *gin.Context) {
 func (h *Handler) updateTrack(c *gin.Context) {
 	var input MusicPlayerBackend.Track
 
+	trackId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "can't parse param")
+		return
+	}
 	if err := c.BindJSON(&input); err != nil {
 		newErrorResponse(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
-	if err := h.services.Tracks.UpdateTrack(input); err != nil {
+	if err := h.services.Tracks.UpdateTrack(trackId, input); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return
 	}

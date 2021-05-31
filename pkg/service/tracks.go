@@ -21,8 +21,8 @@ func (t *TracksService) GetTrack(trackId int) (MusicPlayerBackend.Track, error) 
 	return t.repo.GetTrack(trackId)
 }
 
-func (t *TracksService) UpdateTrack(track MusicPlayerBackend.Track) error {
-	return t.repo.UpdateTrack(track)
+func (t *TracksService) UpdateTrack(trackId int, track MusicPlayerBackend.Track) error {
+	return t.repo.UpdateTrack(trackId, track)
 }
 
 func (t *TracksService) DeleteTrack(trackId int) error {

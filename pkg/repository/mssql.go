@@ -67,5 +67,5 @@ func initTableNames(db_name string) {
 	artistsTable = db_name + ".dbo.Artists"
 	// init procedures name
 	addTrackProc = db_name + ".dbo.AddTrack"
-	updateTrackProc = db_name + ".dbp.UpdateTrack"
+	updateTrackProc = db_name + ".dbo.UpdateTrack"
 }
