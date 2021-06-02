@@ -44,3 +44,11 @@ func (t *TracksService) SetLike(trackId int) error {
 func (t *TracksService) GetAllLikes(userId int) ([]int, error) {
 	return t.repo.GetAllLikes(userId)
 }
+
+func (t *TracksService) UploadTrack(trackId int, blob []byte) error {
+	return t.repo.UploadTrack(trackId, blob)
+}
+
+func (t *TracksService) DownloadTrack(trackId int) ([]byte, error) {
+	return t.repo.DownloadTrack(trackId)
+}

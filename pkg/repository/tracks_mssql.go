@@ -1,6 +1,8 @@
 package repository
 
 import (
+	"crypto/sha1"
+	"encoding/hex"
 	"fmt"
 
 	"github.com/jmoiron/sqlx"
@@ -110,8 +112,59 @@ func (t *TracksMSSQL) SetLike(trackId int) error {
 
 func (t *TracksMSSQL) GetAllLikes(userId int) ([]int, error) {
 	var likes []int
-	query := fmt.Sprintf("select id_track from %s where owner_id=@p1",
+	query := fmt.Sprintf("select id_track from %s where owner_id=@p1 and is_liked=1",
 		trackTable)
 	err := t.db.Select(&likes, query, userId)
 	return likes, err
+}
+
+func (t *TracksMSSQL) UploadTrack(trackId int, blob []byte) error {
+	var id int
+	hashBytes := sha1.Sum(blob)
+	hash := hex.EncodeToString(hashBytes[:])
+	query := fmt.Sprintf("insert into %s output INSERTED.id_track_data values(@p1, @p2)",
+		trackDataTable)
+	tx, err := t.db.Begin()
+	if err != nil {
+		return err
+	}
+
+	row := tx.QueryRow(query, hash, blob)
+	if err := row.Scan(&id); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	query = fmt.Sprintf("update %s set data=@p1 where id_track=@p2", trackTable)
+	_, err = tx.Exec(query, id, trackId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return nil
+}
+
+func (t *TracksMSSQL) DownloadTrack(trackId int) ([]byte, error) {
+	var blob []byte
+	// query := fmt.Sprintf(`select %s.data from %s join %s on %s.data=id_track_data
+	// 					  where id_track=@p1`, trackDataTable,  trackTable,
+		// trackDataTable, trackTable)
+	query := `select convert (varbinary, "MusicPlayer"."dbo"."TrackData"."data")
+ 			   from "MusicPlayer"."dbo"."Tracks" join
+			  "MusicPlayer"."dbo"."TrackData" on
+			 "MusicPlayer"."dbo"."Tracks".data=id_track_data where id_track=1`
+	row := t.db.QueryRow(query, trackId)
+	if err := row.Scan(&blob); err != nil {
+		return blob, err
+	}
+	// if err := t.db.Select(&blob, query, trackId); err != nil {
+	// 	return blob, err
+	// }
+	return blob, nil
 }

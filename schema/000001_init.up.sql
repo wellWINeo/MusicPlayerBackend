@@ -86,7 +86,7 @@ create table History
     id_history int not null identity(1,1),
     track_id int,
     [user_id] int,
-    [time] datetime1,
+    [time] datetime,
     ---
     constraint pk_history_id primary key clustered (id_history),
     constraint fk_history_track foreign key (track_id) references Tracks (id_track),
@@ -111,11 +111,9 @@ create table Playlist
     id_playlist int not null identity(1,1),
     [user_id] int,
     title varchar(100),
-    artist_id integer,
     ---
     constraint pk_playlist_id primary key clustered (id_playlist),
-    constraint fk_playlist_user foreign key ([user_id]) references Users (id_user) on delete cascade,
-    constraint fk_playlist_artist foreign key (artist_id) references Artists (id_artist) on delete cascade,
+    constraint fk_playlist_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
 go
 
@@ -234,7 +232,6 @@ begin
     -- purging artists
     delete from Artists
     where not exists (select * from Tracks where artist_id=id_artist)
-          and not exists (select * from Playlist where artist_id=id_artist)
 
     -- purging genres
     delete from Genre

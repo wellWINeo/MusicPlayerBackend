@@ -17,6 +17,7 @@ var (
 	referalsTable,
 	ownsTable,
 	playlistTable,
+	playlistContentTable,
 	contentTable,
 	trackDataTable,
 	artistsTable,
@@ -62,6 +63,7 @@ func initTableNames(db_name string) {
 	referalsTable = db_name + ".dbo.Referals"
 	ownsTable = db_name + ".dbo.Owns"
 	playlistTable = db_name + ".dbo.Playlist"
+	playlistContentTable = db_name + ".dbo.PlaylistContent"
 	contentTable = db_name + ".dbo.PlaylistContent"
 	trackDataTable = db_name + ".dbo.TrackData"
 	artistsTable = db_name + ".dbo.Artists"

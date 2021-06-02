@@ -15,7 +15,13 @@ type Authorization interface {
 }
 
 type Playlist interface {
-
+	CreatePlaylist(title string, userId int) (int, error)
+	GetPlaylist(id int) ([]MusicPlayerBackend.Track, error)
+	UpdatePlaylist(title string, playlistId int) error
+	DeletePlaylist(id int) error
+	AddToPlaylist(playlistId, trackId int) error
+	RemoveFromPlaylist(playlistId, trackId int) error
+	GetUsersPlaylists(userId int) ([]MusicPlayerBackend.Playlist, error)
 }
 
 type Tracks interface {
@@ -25,8 +31,8 @@ type Tracks interface {
 	GetAllTracks(userId int) ([]MusicPlayerBackend.Track, error)
 	UpdateTrack(trackId int, track MusicPlayerBackend.Track) error
 	DeleteTrack(trackId int) error
-	// UploadTrack()
-	// DownloadTrack()
+	UploadTrack(trackId int, blob []byte) error
+	DownloadTrack(trackId int) ([]byte, error)
 	SetLike(trackId int) error
 	GetAllLikes(userId int) ([]int, error)
 }
@@ -49,5 +55,6 @@ func NewRepository(db *sqlx.DB) *Repository {
 		Authorization: NewAuthMSSQL(db),
 		Tracks: NewTracksMSSQL(db),
 		History: NewHistoryMSSQL(db),
+		Playlist: NewPlaylistMSSQL(db),
 	}
 }

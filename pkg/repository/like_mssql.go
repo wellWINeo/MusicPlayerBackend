@@ -6,6 +6,7 @@ import (
 
 	mssql "github.com/denisenkom/go-mssqldb"
 	"github.com/jmoiron/sqlx"
+	"github.com/sirupsen/logrus"
 )
 
 type LikeMSSQL struct {
@@ -32,7 +33,8 @@ func (l *LikeMSSQL) UnsetLike(trackId, userId int) error {
 
 func (l *LikeMSSQL) GetAll(userId int) ([]int, error) {
 	var likes []int
-	query := fmt.Sprintf("select id_likes from %s where user_id=@p1", likesTable)
+	logrus.Println("here")
+	query := fmt.Sprintf("select id_track from %s where owner_id=@p1 and is_liked=1", trackTable)
 	if err := l.db.Select(&likes, query, userId); err != nil {
 		return []int{}, err
 	}

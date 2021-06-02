@@ -119,8 +119,13 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, tokenClaims{
 		jwt.StandardClaims{
+			Audience:  "",
 			ExpiresAt: time.Now().Add(tokenTTL).Unix(),
+			Id:        "",
 			IssuedAt:  time.Now().Unix(),
+			Issuer:    "",
+			NotBefore: 0,
+			Subject:   "",
 		},
 		user.Id,
 	})

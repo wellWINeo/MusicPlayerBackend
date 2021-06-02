@@ -38,15 +38,16 @@ func (h *Handler) userIdentity(c *gin.Context) {
 	c.Set(userIdCtx, userId)
 }
 
-func (h *Handler) accessCheck(c *gin.Context) {
-	userId, err := getUserId(c)
-	if err != nil {
+func (h *Handler) accessCheckTrack(c *gin.Context) {
+	// skip if target id not specified
+	targetId, err := strconv.Atoi(c.Param("id"))
+	if targetId == 0 || err != nil {
 		return
 	}
 
-	// skip if target id not specified
-	targetId, err := strconv.Atoi(c.Param("id"))
-	if targetId == 0 {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
 		return
 	}
 
@@ -54,6 +55,32 @@ func (h *Handler) accessCheck(c *gin.Context) {
 
 	for _, value := range sliceId {
 		if value == targetId {
+			return
+		}
+	}
+
+	// value not found, access denied
+	newErrorResponse(c, http.StatusForbidden, "Access denied")
+	return
+}
+
+func (h *Handler) accessCheckPlaylist(c *gin.Context) {
+	// skip if target id not specified
+	targetId, err := strconv.Atoi(c.Param("id"))
+	if targetId == 0 || err != nil {
+		return
+	}
+
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
+		return
+	}
+
+	playlists, err := h.services.Playlist.GetUsersPlaylists(userId)
+
+	for _, value := range playlists {
+		if value.PlaylistId == targetId {
 			return
 		}
 	}
