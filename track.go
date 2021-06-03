@@ -1,7 +1,7 @@
 package MusicPlayerBackend
 
 type Track struct {
-	TrackId int    `json:"-" db:"id_track"`
+	TrackId int    `json:"track_id" db:"id_track"`
 	Title   string `json:"title" binding:"required" db:"title"`
 	Hash    string `json:"-" db:"hash"`
 	Genre   string `json:"genre" db:"genre_name"`

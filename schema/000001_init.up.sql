@@ -39,13 +39,13 @@ create table Genre
 );
 go
 
-create table TrackData
-(
-    id_track_data int not null identity(1,1),
-    hash varchar(256) unique,
-    [data] varbinary(max)
-    constraint pk_track_data_id primary key clustered (id_track_data)
-);
+/* create table TrackData */
+/* ( */
+/*     id_track_data int not null identity(1,1), */
+/*     hash varchar(256) unique, */
+/*     [data] varbinary(max) */
+/*     constraint pk_track_data_id primary key clustered (id_track_data) */
+/* ); */
 
 create table Users
 (
@@ -64,7 +64,6 @@ create table Tracks
 (
     id_track int not null identity(1,1),
     title varchar(50) not null,
-    [data] int,
     artist_id int,
     [year] int,
     genre_id int,
@@ -73,7 +72,6 @@ create table Tracks
     owner_id int,
     ---
     constraint pk_id_track_ primary key clustered (id_track),
-    constraint fk_track_id foreign key ([data]) references TrackData (id_track_data),
     constraint fk_tracks_artist foreign key (artist_id) references Artists (id_artist),
     constraint fk_tracks_genre foreign key (genre_id) references Genre (id_genre),
     constraint fk_tracks_owner foreign key (owner_id) references Users (id_user) on delete cascade
