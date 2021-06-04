@@ -44,7 +44,7 @@ func main() {
 	}
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos, mailConfig)
-	handler := handler.NewHandler(services)
+	handler := handler.NewHandler(services, viper.GetString("server.save_dir"))
 	srv := new(MusicPlayerBackend.Server)
 	logrus.Printf("Running on port: %d", viper.GetInt("server.port"))
 	if err := srv.Run(viper.GetInt("server.port"), handler.InitRoutes()); err != nil {

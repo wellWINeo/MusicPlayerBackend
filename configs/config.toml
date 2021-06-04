@@ -1,5 +1,6 @@
 [server]
 port = 8000
+save_dir = "~/server_go"
 
 [db]
 host = "localhost"

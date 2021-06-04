@@ -7,10 +7,14 @@ import (
 
 type Handler struct {
 	services *service.Service
+	savePath string
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *service.Service, savePath string) *Handler {
+	return &Handler{
+		services: services,
+		savePath: savePath,
+	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
