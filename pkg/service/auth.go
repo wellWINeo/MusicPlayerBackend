@@ -201,3 +201,7 @@ func (s *AuthService) GetUser(id int) (MusicPlayerBackend.User, error) {
 func (s *AuthService) DeleteUser(id int) error {
 	return s.repo.DeleteUser(id)
 }
+
+func (s *AuthService) BuyPremium(userId int) error {
+	return s.repo.BuyPremium(userId)
+}

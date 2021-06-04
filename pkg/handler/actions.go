@@ -70,3 +70,18 @@ func (h *Handler) getHistory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, history)
 }
+
+func (h *Handler) buyPremium(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
+		return
+	}
+
+	if err := h.services.Authorization.BuyPremium(userId); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.Status(http.StatusOK)
+}

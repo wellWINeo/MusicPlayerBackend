@@ -197,6 +197,7 @@ func (h *Handler) uploadTrack(c *gin.Context) {
 	}
 
 	c.SaveUploadedFile(file, fmt.Sprintf("/home/o__ni/server_go/%d", trackId))
+	c.Status(http.StatusOK)
 }
 
 func (h *Handler) downloadTrack(c *gin.Context) {

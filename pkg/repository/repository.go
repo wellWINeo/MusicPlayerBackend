@@ -12,6 +12,7 @@ type Authorization interface {
 	GetUserById(id int) (MusicPlayerBackend.User, error)
 	DeleteUser(id int) error
 	UpdateUser(user MusicPlayerBackend.User) error
+	BuyPremium(userId int) error
 }
 
 type Playlist interface {

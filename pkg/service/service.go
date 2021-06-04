@@ -14,6 +14,7 @@ type Authorization interface {
 	GetUser(id int) (MusicPlayerBackend.User, error)
 	SendCode(user MusicPlayerBackend.User) error
 	Verify(code int) (MusicPlayerBackend.User, bool)
+	BuyPremium(userId int) error
 }
 
 type Playlist interface {

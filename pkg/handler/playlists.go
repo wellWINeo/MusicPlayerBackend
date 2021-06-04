@@ -49,6 +49,11 @@ func (h *Handler) updatePlaylist(c *gin.Context) {
 		return
 	}
 
+	if err := c.BindJSON(&input); err != nil {
+		newErrorResponse(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
 	if err := h.services.Playlist.UpdatePlaylist(input.Title, playlistId); err != nil {
 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
 		return

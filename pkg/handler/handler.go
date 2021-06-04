@@ -65,6 +65,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		}
 
 		api.GET("/history", h.getHistory)
+		api.POST("/buy", h.buyPremium)
 	}
 
 	return router
