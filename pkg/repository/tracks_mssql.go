@@ -99,9 +99,25 @@ func (t *TracksMSSQL) UpdateTrack(trackId int, track MusicPlayerBackend.Track) e
 }
 
 func (t *TracksMSSQL) DeleteTrack(trackId int) error {
-	query := fmt.Sprintf("delete from %s where id_track=@p1", trackTable)
-	_, err := t.db.Exec(query, trackId)
-	return err
+	tx, err := t.db.Begin()
+	if err != nil {
+		return err
+	}
+	query := fmt.Sprintf("delete from %s where track_id=@p1", histroryTable)
+	_, err = tx.Exec(query, trackId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	query = fmt.Sprintf("delete from %s where id_track=@p1", trackTable)
+	_, err = tx.Exec(query, trackId)
+	if err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	return tx.Commit()
 }
 
 func (t *TracksMSSQL) SetLike(trackId int) error {

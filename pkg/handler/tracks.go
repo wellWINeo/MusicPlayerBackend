@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"fmt"
 	"io"
 	"net/http"
 	"os"
+	"path"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -102,25 +102,6 @@ func (h *Handler) deleteTrack(c *gin.Context) {
 	c.Status(http.StatusOK)
 }
 
-// func (h *Handler) uploadTrack(c *gin.Context) {
-// 	var buf []byte
-
-// 	trackId, err := strconv.Atoi(c.Param("id"))
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	buf, err = io.ReadAll(c.Request.Body)
-
-// 	if err := h.services.Tracks.UploadTrack(trackId, buf); err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	c.Status(http.StatusOK)
-// }
-
 var MEDIA_TYPES = map[string]interface{}{
 	// audio
 	"audio/basic": nil,
@@ -151,38 +132,6 @@ var MEDIA_TYPES = map[string]interface{}{
 
 }
 
-// func (h *Handler) downloadTrack(c *gin.Context) {
-// 	userId, err := getUserId(c)
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
-// 		return
-// 	}
-
-// 	trackId, err := strconv.Atoi(c.Param("id"))
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusBadRequest, "can't parse param")
-// 		return
-// 	}
-
-// 	if err := h.services.History.AddHistory(trackId, userId); err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	blob, err := h.services.DownloadTrack(trackId)
-// 	if err != nil {
-// 		newErrorResponse(c, http.StatusInternalServerError, err.Error())
-// 		return
-// 	}
-
-// 	logrus.Printf("size: %d", len(blob))
-
-// 	io.Copy(c.Writer, bytes.NewReader(blob))
-
-// 	c.Writer.Header().Add("Content-type", "application/octet-stream")
-// 	c.Status(http.StatusOK)
-// }
-
 func (h *Handler) uploadTrack(c *gin.Context) {
 	trackId, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -196,7 +145,8 @@ func (h *Handler) uploadTrack(c *gin.Context) {
 		return
 	}
 
-	c.SaveUploadedFile(file, fmt.Sprintf("/home/o__ni/server_go/%d", trackId))
+	c.SaveUploadedFile(file, path.Join(h.savePath, strconv.Itoa(trackId)))
+	c.Status(http.StatusOK)
 }
 
 func (h *Handler) downloadTrack(c *gin.Context) {
@@ -217,7 +167,7 @@ func (h *Handler) downloadTrack(c *gin.Context) {
 		return
 	}
 
-	file, err := os.Open(fmt.Sprintf("/home/o__ni/server_go/%d", trackId))
+	file, err := os.Open(path.Join(h.savePath, strconv.Itoa(trackId)))
 	if err != nil {
 		newErrorResponse(c, http.StatusNotFound, err.Error())
 		return

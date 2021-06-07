@@ -2,3 +2,4 @@ MusicPlayerBackend
 *.db
 .env
 .token
+*.out
