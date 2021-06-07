@@ -36,11 +36,13 @@ func main() {
 		logrus.Fatalf("Can't connect to DB: %s", err.Error())
 	}
 
-	mailConfig := service.MailConfig{
+	mailConfig := service.AuthConfig{
 		Host: viper.GetString("mail.host"),
 		Port: viper.GetInt("mail.port"),
 		MailBox: os.Getenv("MAIL_BOX"),
 		Password: os.Getenv("MAIL_PASSWORD"),
+		Salt: os.Getenv("SALT"),
+		TokenSecret: os.Getenv("SECRET"),
 	}
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos, mailConfig)

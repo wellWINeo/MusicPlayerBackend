@@ -2,7 +2,7 @@
 port = 8000
 
 [db]
-host = "localhost"
+host = "192.168.0.15"
 port = 1433
 username = "SA"
 dbname = "MusicPlayer"

@@ -16,24 +16,22 @@ import (
 )
 
 const (
-	salt        = "asdfj324eo5kj435kj321aj"
-	tokenTTL    = 12 * time.Hour
-	tokenSecret = "sdf734bjhrb34l673hj32"
-	regexMail = `^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$`
+	tokenTTL       = 12 * time.Hour
+	regexMail      = `^([a-z0-9_-]+\.)*[a-z0-9_-]+@[a-z0-9_-]+(\.[a-z0-9_-]+)*\.[a-z]{2,6}$`
 	regexOnlyASCII = `^[\x00-\x7F]*$`
 )
 
 var (
-	EmptyPassword = errors.New("Empty password field")
+	EmptyPassword          = errors.New("Empty password field")
 	InvalidCharsInPassword = errors.New("Invalid chars in password")
-	EmptyUsername = errors.New("Empty username field")
+	EmptyUsername          = errors.New("Empty username field")
 	InvalidCharsInUsername = errors.New("Invalid chars in username")
-	NotValidMail = errors.New("Invalid email field")
+	NotValidMail           = errors.New("Invalid email field")
 )
 
 type AuthService struct {
 	verificationCodes map[int]MusicPlayerBackend.User
-	mailConfig        MailConfig
+	config            AuthConfig
 	repo              repository.Authorization
 }
 type tokenClaims struct {
@@ -41,19 +39,21 @@ type tokenClaims struct {
 	UserId int `json:"user_id"`
 }
 
-type MailConfig struct {
+type AuthConfig struct {
 	Port int
+	Salt,
+	TokenSecret,
 	Host,
 	MailBox,
 	Password string
 }
 
-func NewAuthService(repo repository.Authorization, mailConfig MailConfig) *AuthService {
+func NewAuthService(repo repository.Authorization, config AuthConfig) *AuthService {
 
 	return &AuthService{
 		verificationCodes: make(map[int]MusicPlayerBackend.User),
 		repo:              repo,
-		mailConfig:        mailConfig,
+		config:            config,
 	}
 }
 
@@ -108,7 +108,7 @@ func (s *AuthService) GenerateHashPassword(passwd string) string {
 	hash := sha1.New()
 	hash.Write([]byte(passwd))
 
-	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
+	return fmt.Sprintf("%x", hash.Sum([]byte(s.config.Salt)))
 }
 
 func (s *AuthService) GenerateToken(username, password string) (string, error) {
@@ -130,7 +130,7 @@ func (s *AuthService) GenerateToken(username, password string) (string, error) {
 		user.Id,
 	})
 
-	return token.SignedString([]byte(tokenSecret))
+	return token.SignedString([]byte(s.config.TokenSecret))
 }
 
 func (s *AuthService) ParseToken(accessToken string) (int, error) {
@@ -138,7 +138,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
 		}
-		return []byte(tokenSecret), nil
+		return []byte(s.config.TokenSecret), nil
 	})
 	if err != nil {
 		return 0, nil
@@ -162,15 +162,15 @@ func (s *AuthService) SendCode(user MusicPlayerBackend.User) error {
 	s.verificationCodes[int(code)] = user
 
 	to := []string{user.Email}
-	addr := fmt.Sprintf("%s:%d", s.mailConfig.Host, s.mailConfig.Port)
+	addr := fmt.Sprintf("%s:%d", s.config.Host, s.config.Port)
 
 	msg := []byte(fmt.Sprintf("To: %s\r\n"+
 		"Subject: Verification code\r\n"+
 		"Code - %d\r\n",
 		user.Email, code))
-	auth := smtp.PlainAuth("", s.mailConfig.MailBox, s.mailConfig.Password,
-		s.mailConfig.Host)
-	err := smtp.SendMail(addr, auth, s.mailConfig.MailBox, to, msg)
+	auth := smtp.PlainAuth("", s.config.MailBox, s.config.Password,
+		s.config.Host)
+	err := smtp.SendMail(addr, auth, s.config.MailBox, to, msg)
 
 	return err
 }
