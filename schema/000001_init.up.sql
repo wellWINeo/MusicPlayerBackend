@@ -87,7 +87,7 @@ create table History
     [time] datetime,
     ---
     constraint pk_history_id primary key clustered (id_history),
-    constraint fk_history_track foreign key (track_id) references Tracks (id_track) on delete cascade,
+    constraint fk_history_track foreign key (track_id) references Tracks (id_track) on delete no action,
     constraint fk_history_user foreign key ([user_id]) references Users (id_user) on delete cascade
 );
 go
