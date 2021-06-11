@@ -1,0 +1,17 @@
+[Unit]
+Description=MusicPlayerBackend service
+After=network.target mssql-server.service
+
+[Service]
+Type=simple
+User=user
+Group=user_group
+
+WorkingDirectory=WorkDir
+ExecStart=PathToBinary
+
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
