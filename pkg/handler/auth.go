@@ -64,7 +64,6 @@ func (h *Handler) verify(ctx *gin.Context) {
 		return
 	}
 
-
 	user, err := h.services.GetUser(input.UserId)
 	if err != nil {
 		newErrorResponse(ctx, http.StatusInternalServerError, err.Error())
@@ -89,7 +88,6 @@ func (h *Handler) verify(ctx *gin.Context) {
 		newErrorResponse(ctx, http.StatusInternalServerError, "not equal users structs")
 		return
 	}
-
 
 	ctx.JSON(http.StatusOK, map[string]interface{}{
 		"msg": "account verified",

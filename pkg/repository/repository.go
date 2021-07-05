@@ -38,7 +38,6 @@ type Tracks interface {
 	GetAllLikes(userId int) ([]int, error)
 }
 
-
 type History interface {
 	AddHistory(trackId, userId int) error
 	GetHistory(userId int) ([]MusicPlayerBackend.History, error)
@@ -54,8 +53,8 @@ type Repository struct {
 func NewRepository(db *sqlx.DB) *Repository {
 	return &Repository{
 		Authorization: NewAuthMSSQL(db),
-		Tracks: NewTracksMSSQL(db),
-		History: NewHistoryMSSQL(db),
-		Playlist: NewPlaylistMSSQL(db),
+		Tracks:        NewTracksMSSQL(db),
+		History:       NewHistoryMSSQL(db),
+		Playlist:      NewPlaylistMSSQL(db),
 	}
 }

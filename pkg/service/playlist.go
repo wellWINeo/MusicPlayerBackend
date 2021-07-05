@@ -12,7 +12,7 @@ type PlaylistService struct {
 	repo repository.Playlist
 }
 
-func NewPlaylistService (repo repository.Playlist) *PlaylistService {
+func NewPlaylistService(repo repository.Playlist) *PlaylistService {
 	return &PlaylistService{repo: repo}
 }
 

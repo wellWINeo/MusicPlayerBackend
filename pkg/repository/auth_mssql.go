@@ -68,10 +68,10 @@ func (a *AuthMSSQL) DeleteUser(id int) error {
 }
 
 func (a *AuthMSSQL) UpdateUser(user MusicPlayerBackend.User) error {
-	query := fmt.Sprintf("update %s set username=@p1, email=@p2, " +
+	query := fmt.Sprintf("update %s set username=@p1, email=@p2, "+
 		"is_premium=@p4, is_verified=@p5", usersTable)
 	_, err := a.db.Exec(query, user.Username, user.Email, user.Password,
-			user.IsPremium, user.IsVerified)
+		user.IsPremium, user.IsVerified)
 	return err
 }
 

@@ -104,32 +104,31 @@ func (h *Handler) deleteTrack(c *gin.Context) {
 
 var MEDIA_TYPES = map[string]interface{}{
 	// audio
-	"audio/basic": nil,
-	"audio/L24": nil,
-	"audio/mp4": nil,
-	"audio/acc": nil,
-	"audio/mpeg": nil,
-	"audio/ogg": nil,
-	"audio/vorbis": nil,
-	"audio/x-ms-wma": nil,
-	"audio/x-ms-wax": nil,
+	"audio/basic":            nil,
+	"audio/L24":              nil,
+	"audio/mp4":              nil,
+	"audio/acc":              nil,
+	"audio/mpeg":             nil,
+	"audio/ogg":              nil,
+	"audio/vorbis":           nil,
+	"audio/x-ms-wma":         nil,
+	"audio/x-ms-wax":         nil,
 	"audio/vnd.rn-realaudio": nil,
-	"audio/vnd.wave": nil,
-	"audio/web,": nil,
+	"audio/vnd.wave":         nil,
+	"audio/web,":             nil,
 	// video
-	"video/mpeg": nil,
-	"video/mp4": nil,
-	"video/ogg": nil,
+	"video/mpeg":      nil,
+	"video/mp4":       nil,
+	"video/ogg":       nil,
 	"video/quicktime": nil,
-	"video/webm,": nil,
-	"video/x-ms-wmv": nil,
-	"video/x-flv": nil,
+	"video/webm,":     nil,
+	"video/x-ms-wmv":  nil,
+	"video/x-flv":     nil,
 	"video/x-msvideo": nil,
-	"video/3gpp": nil,
-	"video/3gpp2": nil,
+	"video/3gpp":      nil,
+	"video/3gpp2":     nil,
 	//
 	"application/octet-stream": nil,
-
 }
 
 func (h *Handler) uploadTrack(c *gin.Context) {

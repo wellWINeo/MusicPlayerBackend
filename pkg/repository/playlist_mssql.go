@@ -17,7 +17,6 @@ func NewPlaylistMSSQL(db *sqlx.DB) *PlaylistMSSQL {
 	return &PlaylistMSSQL{db: db}
 }
 
-
 func (p *PlaylistMSSQL) CreatePlaylist(title string, userId int) (int, error) {
 	var id int
 	query := fmt.Sprintf("insert into %s output INSERTED.id_playlist values (@p1, @p2)",

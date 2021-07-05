@@ -40,7 +40,6 @@ type Tracks interface {
 	GetAllLikes(userId int) ([]int, error)
 }
 
-
 type History interface {
 	AddHistory(trackId, userId int) error
 	GetHistory(userId int) ([]MusicPlayerBackend.History, error)
@@ -56,8 +55,8 @@ type Service struct {
 func NewService(repos *repository.Repository, mailConfig MailConfig) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization, mailConfig),
-		Tracks: NewTracksService(repos.Tracks),
-		History: NewHistoryService(repos.History),
-		Playlist: NewPlaylistService(repos.Playlist),
+		Tracks:        NewTracksService(repos.Tracks),
+		History:       NewHistoryService(repos.History),
+		Playlist:      NewPlaylistService(repos.Playlist),
 	}
 }

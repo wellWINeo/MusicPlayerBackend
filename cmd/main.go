@@ -20,16 +20,16 @@ func main() {
 		logrus.Fatalf("Can't initialize config: %s", err.Error())
 	}
 
-	if err := godotenv.Load(); err  != nil {
+	if err := godotenv.Load(); err != nil {
 		logrus.Fatalf("Can't read .env file: %s", err.Error())
 	}
 
 	db, err := repository.NewMSSQLDB(repository.Config{
-		Host: viper.GetString("db.host"),
-		Port: viper.GetInt("db.port"),
+		Host:     viper.GetString("db.host"),
+		Port:     viper.GetInt("db.port"),
 		Username: viper.GetString("db.username"),
 		Password: os.Getenv("DB_PASSWORD"),
-		DBName: viper.GetString("db.dbname"),
+		DBName:   viper.GetString("db.dbname"),
 	})
 
 	if err != nil {
@@ -37,11 +37,11 @@ func main() {
 	}
 
 	mailConfig := service.AuthConfig{
-		Host: viper.GetString("mail.host"),
-		Port: viper.GetInt("mail.port"),
-		MailBox: os.Getenv("MAIL_BOX"),
-		Password: os.Getenv("MAIL_PASSWORD"),
-		Salt: os.Getenv("SALT"),
+		Host:        viper.GetString("mail.host"),
+		Port:        viper.GetInt("mail.port"),
+		MailBox:     os.Getenv("MAIL_BOX"),
+		Password:    os.Getenv("MAIL_PASSWORD"),
+		Salt:        os.Getenv("SALT"),
 		TokenSecret: os.Getenv("SECRET"),
 	}
 	repos := repository.NewRepository(db)

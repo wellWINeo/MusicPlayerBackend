@@ -85,7 +85,6 @@ func (t *TracksMSSQL) GetAllTracks(userId int) ([]MusicPlayerBackend.Track, erro
 		return []MusicPlayerBackend.Track{}, err
 	}
 
-
 	return response, nil
 }
 
@@ -170,7 +169,7 @@ func (t *TracksMSSQL) DownloadTrack(trackId int) ([]byte, error) {
 	var blob []byte
 	// query := fmt.Sprintf(`select %s.data from %s join %s on %s.data=id_track_data
 	// 					  where id_track=@p1`, trackDataTable,  trackTable,
-		// trackDataTable, trackTable)
+	// trackDataTable, trackTable)
 	query := `select convert (varbinary, "MusicPlayer"."dbo"."TrackData"."data")
  			   from "MusicPlayer"."dbo"."Tracks" join
 			  "MusicPlayer"."dbo"."TrackData" on

@@ -101,6 +101,7 @@ func (h *Handler) deletePlaylist(c *gin.Context) {
 
 	c.Status(http.StatusOK)
 }
+
 type InputModPlaylist struct {
 	TrackId int `json:"track_id" binding:"required"`
 }

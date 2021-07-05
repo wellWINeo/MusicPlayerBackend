@@ -8,7 +8,7 @@ type Track struct {
 	Artist
 	Year     int  `json:"year" db:"year"`
 	HasVideo bool `json:"has_video" db:"has_video"`
-	IsLiked bool `json:"is_liked" db:"is_liked"`
+	IsLiked  bool `json:"is_liked" db:"is_liked"`
 }
 
 type Artist struct {
