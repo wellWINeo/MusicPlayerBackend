@@ -7,19 +7,20 @@ import (
 
 type Handler struct {
 	services *service.Service
-	savePath string
+	dataPath string
 }
 
 func NewHandler(services *service.Service, savePath string) *Handler {
 	return &Handler{
 		services: services,
-		savePath: savePath,
+		dataPath: savePath,
 	}
 }
 
 func (h *Handler) InitRoutes() *gin.Engine {
 	router := gin.New()
 
+	// login group
 	auth := router.Group("/auth")
 	{
 		auth.POST("/sign-in", h.signIn)
@@ -29,6 +30,7 @@ func (h *Handler) InitRoutes() *gin.Engine {
 
 	api := router.Group("/api", h.userIdentity)
 	{
+		// working with user profile
 		users := api.Group("/users")
 		{
 			users.GET("/", h.getUser)
@@ -36,17 +38,20 @@ func (h *Handler) InitRoutes() *gin.Engine {
 			users.DELETE("/", h.deleteUser)
 		}
 
+		// api for user's library
 		tracks := api.Group("/tracks", h.accessCheckTrack)
 		{
 			tracks.GET("/all", h.getAllTracks)
 			tracks.GET("/download/:id", h.downloadTrack)
 			tracks.POST("/upload/:id", h.uploadTrack)
+			tracks.GET("/listen/:id/:part", h.loadTrackPart)
 			tracks.GET("/:id", h.getTrack)
 			tracks.PUT("/:id", h.updateTrack)
 			tracks.POST("/", h.createTrack)
 			tracks.DELETE("/:id", h.deleteTrack)
 		}
 
+		// api for user's playlists
 		playlists := api.Group("/playlists", h.accessCheckPlaylist)
 		{
 			playlists.GET("/all", h.getAllPlaylists)

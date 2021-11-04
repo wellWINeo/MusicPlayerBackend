@@ -1,14 +1,15 @@
 package handler
 
 import (
+	"fmt"
+	"github.com/gin-gonic/gin"
+	"github.com/wellWINeo/MusicPlayerBackend"
 	"io"
 	"net/http"
 	"os"
 	"path"
+	"regexp"
 	"strconv"
-
-	"github.com/gin-gonic/gin"
-	"github.com/wellWINeo/MusicPlayerBackend"
 )
 
 func (h *Handler) getAllTracks(c *gin.Context) {
@@ -144,10 +145,44 @@ func (h *Handler) uploadTrack(c *gin.Context) {
 		return
 	}
 
-	c.SaveUploadedFile(file, path.Join(h.savePath, strconv.Itoa(trackId)))
+	err = c.SaveUploadedFile(file, path.Join(h.dataPath, strconv.Itoa(trackId)))
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
 	c.Status(http.StatusOK)
 }
 
+func (h *Handler) loadTrackPart(c *gin.Context) {
+	userId, err := getUserId(c)
+	if err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, "can't get user id")
+		return
+	}
+
+	trackId, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		newErrorResponse(c, http.StatusBadRequest, "can't parse param")
+		return
+	}
+
+	partId := c.Param("part")
+	re := regexp.MustCompile(`(?m)\d{3}`)
+
+	if !re.MatchString(partId) && partId != "list" {
+		newErrorResponse(c, http.StatusBadRequest, "not a number in part")
+		return
+	}
+
+	if err := h.services.History.AddHistory(trackId, userId); err != nil {
+		newErrorResponse(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	c.File(path.Join(h.dataPath, fmt.Sprint(trackId), partId))
+}
+
+// deprecated
 func (h *Handler) downloadTrack(c *gin.Context) {
 	userId, err := getUserId(c)
 	if err != nil {
@@ -166,7 +201,7 @@ func (h *Handler) downloadTrack(c *gin.Context) {
 		return
 	}
 
-	file, err := os.Open(path.Join(h.savePath, strconv.Itoa(trackId)))
+	file, err := os.Open(path.Join(h.dataPath, strconv.Itoa(trackId)))
 	if err != nil {
 		newErrorResponse(c, http.StatusNotFound, err.Error())
 		return

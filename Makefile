@@ -4,15 +4,16 @@
 # @file
 # @version 1.0
 
-ENRTYPOINT=cmd/main.go
+ENTRYPOINT=cmd/main.go
 BINARY=server.out
 
 all: build
 
 build:
-	go build ${ENTRYPOINT} -o ${BINARY}
+	go build -o ${BINARY} ${ENTRYPOINT}
 
 run: build
+	chmod +x ${BINARY}
 	./${BINARY}
 
 clean:
