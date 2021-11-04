@@ -15,9 +15,12 @@ go
 --
 -- DATABASE
 --
+use master;
 drop database if exists MusicPlayer;
 create database MusicPlayer;
-use MusicPlayer
+go
+
+use MusicPlayer;
 go
 
 --
@@ -136,7 +139,7 @@ create procedure UpdateGenre
        @genre_name varchar(100),
        @genre_id int out
 as
-begin
+begin;
     declare @table_id table (id int)
 
     begin try
@@ -151,6 +154,7 @@ begin
           where title=@genre_name
     end catch
 end;
+go
 
 create procedure UpdateArtist
        @artist_name varchar(100),
@@ -171,6 +175,7 @@ begin
           where [name]=@artist_name
     end catch
 end;
+go
 
 -- procedure to add new track
 create procedure AddTrack
@@ -194,6 +199,7 @@ begin
     values(@track_title, @artist_id, @track_year,
            @genre_id, @track_has_video, @owner_id)
 end;
+go
 
 -- procedure to update track and linked data
 create procedure UpdateTrack
@@ -215,8 +221,8 @@ begin
     update Tracks
     set title=@track_title, [year]=@track_year, has_video=@track_has_video
     where id_track=@track_id
-
 end;
+go
 
 --
 -- TRIGGERS
@@ -235,3 +241,4 @@ begin
     delete from Genre
     where not exists (select * from Tracks where genre_id=id_genre)
 end;
+go

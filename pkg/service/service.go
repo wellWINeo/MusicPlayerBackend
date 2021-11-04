@@ -52,7 +52,7 @@ type Service struct {
 	History
 }
 
-func NewService(repos *repository.Repository, mailConfig MailConfig) *Service {
+func NewService(repos *repository.Repository, mailConfig AuthConfig) *Service {
 	return &Service{
 		Authorization: NewAuthService(repos.Authorization, mailConfig),
 		Tracks:        NewTracksService(repos.Tracks),
