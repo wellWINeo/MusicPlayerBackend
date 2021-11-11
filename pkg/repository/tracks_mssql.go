@@ -92,7 +92,7 @@ func (t *TracksMSSQL) UpdateTrack(trackId int, track MusicPlayerBackend.Track) e
 	query := fmt.Sprintf("exec %s @p1, @p2, @p3, @p4, @p5, @p6", updateTrackProc)
 	_, err := t.db.Exec(query, trackId, track.Title, track.Name, track.Genre,
 		track.Year, track.HasVideo)
-	logrus.Printf("exec %s %d, %s, %s, %s, %d, %b", updateTrackProc, trackId,
+	logrus.Printf("exec %s %d, %s, %s, %s, %d, %t", updateTrackProc, trackId,
 		track.Title, track.Name, track.Genre, track.Year, track.HasVideo)
 	return err
 }
@@ -167,9 +167,7 @@ func (t *TracksMSSQL) UploadTrack(trackId int, blob []byte) error {
 
 func (t *TracksMSSQL) DownloadTrack(trackId int) ([]byte, error) {
 	var blob []byte
-	// query := fmt.Sprintf(`select %s.data from %s join %s on %s.data=id_track_data
-	// 					  where id_track=@p1`, trackDataTable,  trackTable,
-	// trackDataTable, trackTable)
+
 	query := `select convert (varbinary, "MusicPlayer"."dbo"."TrackData"."data")
  			   from "MusicPlayer"."dbo"."Tracks" join
 			  "MusicPlayer"."dbo"."TrackData" on
@@ -178,8 +176,6 @@ func (t *TracksMSSQL) DownloadTrack(trackId int) ([]byte, error) {
 	if err := row.Scan(&blob); err != nil {
 		return blob, err
 	}
-	// if err := t.db.Select(&blob, query, trackId); err != nil {
-	// 	return blob, err
-	// }
+
 	return blob, nil
 }

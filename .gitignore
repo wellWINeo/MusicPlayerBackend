@@ -3,3 +3,6 @@ MusicPlayerBackend
 .env
 .token
 *.out
+# ignore binaries
+server.out
+main

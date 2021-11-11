@@ -52,8 +52,8 @@ func (h *Handler) signIn(ctx *gin.Context) {
 }
 
 type VerifyInput struct {
-	UserId int `json:"user_id,string" binding:"required"`
-	Code   int `json:"code,string" binding:"required"`
+	UserId int `json:"user_id" binding:"required"`
+	Code   int `json:"code" binding:"required"`
 }
 
 func (h *Handler) verify(ctx *gin.Context) {

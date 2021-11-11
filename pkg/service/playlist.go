@@ -24,8 +24,8 @@ func (p *PlaylistService) CreatePlaylist(title string, userId int) (int, error) 
 
 	for _, value := range alreadyExists {
 		if value.Title == title {
-			logrus.Printf("%s = %s, %b", value.Title, title, value.Title == title)
-			return 0, errors.New("Platlist with this title already exist")
+			logrus.Printf("%s = %s, %t", value.Title, title, value.Title == title)
+			return 0, errors.New("playlist with this title already exist")
 		}
 	}
 

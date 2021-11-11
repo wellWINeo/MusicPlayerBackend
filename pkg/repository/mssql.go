@@ -53,21 +53,21 @@ func NewMSSQLDB(cfg Config) (*sqlx.DB, error) {
 	return db, nil
 }
 
-func initTableNames(db_name string) {
+func initTableNames(dbName string) {
 	// init tables names
-	usersTable = db_name + ".dbo.Users"
-	trackTable = db_name + ".dbo.Tracks"
-	genreTable = db_name + ".dbo.Genre"
-	likesTable = db_name + ".dbo.Likes"
-	histroryTable = db_name + ".dbo.History"
-	referalsTable = db_name + ".dbo.Referals"
-	ownsTable = db_name + ".dbo.Owns"
-	playlistTable = db_name + ".dbo.Playlist"
-	playlistContentTable = db_name + ".dbo.PlaylistContent"
-	contentTable = db_name + ".dbo.PlaylistContent"
-	trackDataTable = db_name + ".dbo.TrackData"
-	artistsTable = db_name + ".dbo.Artists"
+	usersTable = dbName + ".dbo.Users"
+	trackTable = dbName + ".dbo.Tracks"
+	genreTable = dbName + ".dbo.Genre"
+	likesTable = dbName + ".dbo.Likes"
+	histroryTable = dbName + ".dbo.History"
+	referalsTable = dbName + ".dbo.Referals"
+	ownsTable = dbName + ".dbo.Owns"
+	playlistTable = dbName + ".dbo.Playlist"
+	playlistContentTable = dbName + ".dbo.PlaylistContent"
+	contentTable = dbName + ".dbo.PlaylistContent"
+	trackDataTable = dbName + ".dbo.TrackData"
+	artistsTable = dbName + ".dbo.Artists"
 	// init procedures name
-	addTrackProc = db_name + ".dbo.AddTrack"
-	updateTrackProc = db_name + ".dbo.UpdateTrack"
+	addTrackProc = dbName + ".dbo.AddTrack"
+	updateTrackProc = dbName + ".dbo.UpdateTrack"
 }

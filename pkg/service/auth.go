@@ -22,11 +22,11 @@ const (
 )
 
 var (
-	EmptyPassword          = errors.New("Empty password field")
-	InvalidCharsInPassword = errors.New("Invalid chars in password")
-	EmptyUsername          = errors.New("Empty username field")
-	InvalidCharsInUsername = errors.New("Invalid chars in username")
-	NotValidMail           = errors.New("Invalid email field")
+	EmptyPassword          = errors.New("empty password field")
+	InvalidCharsInPassword = errors.New("invalid chars in password")
+	EmptyUsername          = errors.New("empty username field")
+	InvalidCharsInUsername = errors.New("invalid chars in username")
+	NotValidMail           = errors.New("invalid email field")
 )
 
 type AuthService struct {
@@ -150,7 +150,7 @@ func (s *AuthService) ParseToken(accessToken string) (int, error) {
 	return claims.UserId, nil
 }
 
-// email verification
+// SendCode email verification
 func (s *AuthService) SendCode(user MusicPlayerBackend.User) error {
 	var code int
 	rand.Seed(time.Now().Unix())
