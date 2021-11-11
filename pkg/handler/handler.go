@@ -8,12 +8,14 @@ import (
 type Handler struct {
 	services *service.Service
 	dataPath string
+	tempPath string
 }
 
-func NewHandler(services *service.Service, savePath string) *Handler {
+func NewHandler(services *service.Service, dataPath, tempPath string) *Handler {
 	return &Handler{
 		services: services,
-		dataPath: savePath,
+		dataPath: dataPath,
+		tempPath: tempPath,
 	}
 }
 
@@ -42,9 +44,8 @@ func (h *Handler) InitRoutes() *gin.Engine {
 		tracks := api.Group("/tracks", h.accessCheckTrack)
 		{
 			tracks.GET("/all", h.getAllTracks)
-			tracks.GET("/download/:id", h.downloadTrack)
 			tracks.POST("/upload/:id", h.uploadTrack)
-			tracks.GET("/listen/:id/:part", h.loadTrackPart)
+			tracks.GET("/listen/:id/:part", h.streamTrack)
 			tracks.GET("/:id", h.getTrack)
 			tracks.PUT("/:id", h.updateTrack)
 			tracks.POST("/", h.createTrack)

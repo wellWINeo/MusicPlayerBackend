@@ -34,7 +34,7 @@ type Tracks interface {
 	GetAllTracks(userId int) ([]MusicPlayerBackend.Track, error)
 	UpdateTrack(trackId int, track MusicPlayerBackend.Track) error
 	DeleteTrack(trackId int) error
-	UploadTrack(trackId int, blob []byte) error
+	UploadTrack(trackId int, fileName, dataPath string) error
 	DownloadTrack(trackId int) ([]byte, error)
 	SetLike(trackId int) error
 	GetAllLikes(userId int) ([]int, error)

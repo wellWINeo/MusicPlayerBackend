@@ -1,6 +1,7 @@
 [server]
 port = 8000
 save_dir = "/home/o__ni/Music/server_test"
+temp_dir = "/tmp"
 
 [db]
 host = "localhost"
